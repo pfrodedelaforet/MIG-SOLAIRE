@@ -20,7 +20,8 @@ class DeliveryPoint(Point):
 class Triporteur:
     def __init__(self, capacity, dispo, point, charge):
         self.capacity = capacity #flottant : poids qu'il peut porter
-        self.dispo = dispo #booleen : le triporteur est pr�t � partir
+        self.dispo = dispo #booleen : le triporteur est pret a partir
+        self.charge = charge #flottant : charge du triporteur : en w.h
         self.point = point #point
         self.charge = charge #en %
     def __repr__(self):
