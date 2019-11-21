@@ -18,12 +18,36 @@ class DeliveryPoint(Point):
     def __repr__(self):
         return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
 class Triporteur:
-    def __init__(self, capacity, dispo, point, charge):
+    def __init__(self, capacity, dispo, point, charge, elp):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.dispo = dispo #booleen : le triporteur est pret a partir
         self.charge = charge #flottant : charge du triporteur : en w.h
         self.point = point #point
         self.charge = charge #en %
+        self.liste_tournee = []
+    #Zone Tristan je vous aime
+        self.last_dv_point = elp #de type point : elp de départ du triporteur
+        self.vitesse = 5 #en m/s 
+        self.taille_arrete = -1
+        self.prop_arrete = 0
+
+    def avancer(self,dist,t):
+        if self.taille_arrete == -1:
+            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]] 
+        proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
+        if proptot < 1:
+            self.prop_arrete = proptop
+            #à deplacer 
+        else:
+            self.last_dv_point = self.liste_tournee[0]
+            del self.tournee[0]
+            reste = (proptop-1)*self.taille_arrete/self.vitesse
+            self.taille_arrete = -1
+            self.prop_arrete = 0
+            self.avancer(dist,reste) 
+        
+
+
     def __repr__(self):
         str(self.capacity,self.dispo,self.position, self.charge)
            
