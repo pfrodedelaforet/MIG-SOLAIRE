@@ -18,11 +18,12 @@ class DeliveryPoint(Point):
     def __repr__(self):
         return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
 class Triporteur:
-    def __init__(self, capacity, dispo, point):
+    def __init__(self, capacity, dispo, point, charge):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.dispo = dispo #booleen : le triporteur est pr�t � partir
         self.point = point #point
+        self.charge = charge #en %
     def __repr__(self):
-        str(self.capacity,self.dispo,self.position)
+        str(self.capacity,self.dispo,self.position, self.charge)
            
  
