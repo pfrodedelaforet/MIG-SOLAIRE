@@ -65,3 +65,8 @@ class Triporteur:
         priseslibres[i] = True 
         charges[i] = chargetriporteuravant #ie on a remplacé la batterie par la notre          
  
+class Poids:
+    def __init__(self, energienecess, t, faisable):
+        self.energie = energienecess
+        self.duree = t
+        self.faisable = faisable #un booléen 
