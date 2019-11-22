@@ -1,4 +1,5 @@
 import time
+from conversion import conversion
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -46,7 +47,9 @@ def init_carte():
         return (Cluster,xmin,xmax,ymin,ymax)
 
 
-    a = getImageCluster(43.69795,7.26763, 0.00746,0.0251, 16)
+    lat = 43.69795
+    longi = 7.26763
+    a = getImageCluster(lat,longi, 0.00746,0.0251, 16)
     fig = plt.figure()
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])
@@ -68,7 +71,7 @@ def boucle(n,v,liste_clients,t,capacity,charge,elp):
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
     init_carte()
     while 1:
-        algorithme(n,liste_tripo,dist,liste_clients)
+        algorithme(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)

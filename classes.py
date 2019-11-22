@@ -25,7 +25,7 @@ class Triporteur:
         self.charge = charge #flottant : charge du triporteur : en w.h
         self.pos = [elp.x,elp.y]
         self.charge = charge #en %
-        self.liste_tournee = []
+        self.liste_tournee = [] #Liste de DeliveryPoint
         self.last_dv_point = elp #de type point : elp de départ du triporteur
         self.vitesse = v #en m/s 
         self.taille_arrete = -1
