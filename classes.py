@@ -11,10 +11,11 @@ class Point :
     def __repr__(self) :
         return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2):
+    def __init__(self, lat, lon, t1, t2,poids):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2
+        self.poids = poids #poids est le poids du colis a livrer en kg
     def __repr__(self):
         return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
 class Triporteur:
