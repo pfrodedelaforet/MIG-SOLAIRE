@@ -58,11 +58,13 @@ def actualiser_carte(liste_tripo):
     for elt in liste_tripo:
         elt.dot.set_offset(self.pos[0],self.pos[1])
 
+def liste_client(csv_name):
+    pass
 def boucle(n,v,liste_clients,t,capacity,charge,elp):
     """n : nombre de triporteurs
        clients : liste d'objets de classe delivery_point
        dist : dist[i][j] renvoit la distance entre i et j"""
-    dist = pierre_balance(elp,liste_clients)
+    dist = pierre_balance(elp,liste_clients,calque)
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
     init_carte()
     while 1:
@@ -72,5 +74,4 @@ def boucle(n,v,liste_clients,t,capacity,charge,elp):
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo)
         time.sleep(t)
-
-boucle(5,1,liste_clients,1,100,1000,elp)
+boucle(5,1,liste_clients(nom),1,100,1000,elp,calque)
