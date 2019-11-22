@@ -1,5 +1,5 @@
 from pyproj import Transformer
-transformer_to_lamb= Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+transformer_to_lamb= Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
 
 x_0,y_0=transformer_to_lamb.transform(7.26528, 43.69422 )
 x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
