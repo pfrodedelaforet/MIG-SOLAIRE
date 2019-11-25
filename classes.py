@@ -52,13 +52,13 @@ class Triporteur:
 
     def __repr__(self):
         str(self.capacity,self.dispo,self.position, self.charge)
- class Bornes(Point):
+"""class Bornes(Point):
     def __init__(self, lat, lon, priseslibres, charges):
         Point.__init__(self, lat, lon)
         self.priseslibres = priseslibres #tableau de booleen: à chaque case du tableau est associée une prise
         self.charges = charges #tableau en Wh des charges de chacune des batteries 
     def reserv(self):
-        for i in range len(priseslibres):
+        for i in range(len(priseslibres)):
             if priseslibres[i] & :# ajouter condition de choix fixée par romain et Jeremy
                 priseslibres[i] = False #on choisit la prise 
                 return i
@@ -66,7 +66,7 @@ class Triporteur:
     def dereserv(self, i, chargetriporteuravant):
         priseslibres[i] = True 
         charges[i] = chargetriporteuravant #ie on a remplacé la batterie par la notre          
- 
+""" 
 class Poids:
     def __init__(self, energienecess, t, faisable):
         self.energie = energienecess

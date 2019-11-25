@@ -3,7 +3,9 @@ from conversion import conversion
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from creer_liste_client import creer_liste_clent_csv
+from creer_liste_clients import creer_clients_csv
+from maptograph import graph
+from classes import *
 
 from urllib.request import Request, urlopen
 from io import BytesIO
@@ -58,7 +60,7 @@ def init_carte():
     echelles = [a[1],a[2],a[3],a[4],len(tab),len(tab[0])]
 
 def actualiser_carte(liste_tripo): 
-       """liste_tripo : liste d'objets de type triporteur"""
+    """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
         elt.dot.set_offset(self.pos[0],self.pos[1])
 
@@ -77,7 +79,8 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
             return 1
         else:
             return 0
-    dist = graph(dico_point,liste_clients,bornes = [],elp)
+    bornes = []
+    dist = graph(dico_point,liste_clients,bornes,elp)
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
     creer_clients_csv(nb_clients,csv = "shops.csv")
     init_carte()
@@ -88,5 +91,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo)
         time.sleep(t)
-boucle(5,1,nb_clients = 30,1,100,1000,elp,calque)
+nb_clients = 30
+elp = Point(43.707354, 7.282234)
+boucle(5,1,nb_clients,1,100,1000,elp,calque)
 plt.show()
