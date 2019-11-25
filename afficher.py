@@ -67,25 +67,37 @@ def actualiser_carte(liste_tripo):
     for elt in liste_tripo:
         elt.dot.set_offset(self.pos[0],self.pos[1])
 
-
-def boucle(n,v,nb_clients,t,capacity,charge,elp):
-    """n : nombre de triporteurs
-       clients : liste d'objets de classe delivery_point
-       dist : dist[i][j] renvoit la distance entre i et j"""
+def dicos():
     list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
     list_route=np.genfromtxt('liste_adjacence.csv',delimiter=',')
     dico_points={}
     for i,point in enumerate(list_coor):
-        dico_points[(point[0],point[1])]=[(list_coor[int(j)][0],list_coor[int(j)][1]) for j in list_route[i] if not np.isnan(j)]
+        dico_points[(point[0],point[1])] = [(list_coor[int(j)][0],list_coor[int(j)][1]) for j in list_route[i] if not np.isnan(j)]
     def route(i,j):
         if j in dico_points[i]:
             return 1
         else:
             return 0
+    altitude_route=np.genfromtxt('altitude_route.csv',delimiter=',')
+    altitude={}
+    for i,point in enumerate(list_coor):
+        altitude[(point[0],point[1])]i = altitude_route[i]
+    
+    return dico_points, altitude
+
+def boucle(n,v,nb_clients,t,capacity,charge,elp):
+    """n : nombre de triporteurs
+       clients : liste d'objets de classe delivery_point
+       dist : dist[i][j] renvoit la distance entre i et j"""
+
     bornes = []
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
+
+    dico_points,altitude = dicos()
     dist = graph(dico_points,liste_clients,bornes,elp)
+
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
+
     init_carte()
     while 1:
         algorithme(liste_tripo,dist,liste_clients,elp)
