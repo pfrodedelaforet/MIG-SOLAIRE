@@ -110,6 +110,15 @@ def trouvpoint(coor, altitude, depart, arrivee, tdepuisdep):
         i+=1
     return L[i] #c'est de la classe point
 
+def approx(nodeslist, coor):
+    for i in range(len(nodeslist)) :
+        distmin = float("inf") ; cmin = coor.keys()[0]
+        for c in coor.keys() : 
+            if distance_euc(c, (nodeslist[i].latitude, nodeslist[i].longitude))<distmin:
+                distmin = distance_euc(c, (nodeslist[i].latitude, nodeslist[i].longitude))
+                cmin = c
+        nodeslist[i] = cmin
+    return nodeslist
 
 
 def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):
