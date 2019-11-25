@@ -38,7 +38,7 @@ def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
         grosgraphe[p] = {}
         for j in range(len(coor[i])) :
             q = Point(coor[coor.keys()[i]][j][0],coor[coor.keys()[i]][j][1])
-            progarthur = calcul_energy([(distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude[(coor.keys()[i][0], coor.keys()[i][1])], altitude[(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1])], vitesse, stop(coor)[p][q])], velo, usager = 75, puissmax_usager = 250)
+            progarthur = calcul_energy([(distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude[(coor.keys()[i][0], coor.keys()[i][1])], altitude[(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1])], vitesse, stop(coor)[p][q])], velo, usager , puissmax_usager)
             grosgraphe[p][q] = progarthur[0] + puisempl * distance_euc(coor[i],coor[j])/progarthur[2]
     return grosgraphe
                 
@@ -53,7 +53,7 @@ def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
                 if random.randrange(1, 5) == 1:
                     stop.append(10 *k) #les 3 dernières lignes c'est la génération de la matrice stop aléatoirement
             q = Point(coor[coor.keys()[i]][j][0],coor[coor.keys()[i]][j][1])
-            progarthur = calcul_energy((distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude[(coor.keys()[i][0], coor.keys()[i][1])], altitude[(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1])], vitesse, []))
+            progarthur = calcul_energy([(distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude[(coor.keys()[i][0], coor.keys()[i][1])], altitude[(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1])], vitesse, stop(coor)[p][q])], velo, usager , puissmax_usager)
             graphvit[p][q] = progarthur[2]
     return graphvit #graphvit est un graphe de point donnant la vitesse entre pointi et pointj si pointi et pointj sont adjacents
 
@@ -129,8 +129,8 @@ def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_us
     for s in liste:
         sousgraphe[s] = {} 
         for t in liste:
-            progarthur = calcul_energy([(distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, stop)], velo, usager = 75, puissmax_usager = 250)
-            if type(progarthur != str ): 
-                sousgraphe[s][t] = Poids(djikstra(grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
+            progarthur = calcul_energy([(distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, stop)], velo, usager, puissmax_usager)
+            if type(progarthur != str ):
+                sousgraphe[s][t] = Poids(djikstra(grosgraph(coor, altitude, velo, usager, puissmax_usager), s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
