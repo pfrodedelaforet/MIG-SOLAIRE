@@ -7,6 +7,7 @@ vitesse = 25/3.6
 from math import sqrt
 import random
 from collections import defaultdict
+from  mig_algo_energie_final import *
 
 def distance_euc(L, N):
     return sqrt((L[0]-N[0])**2+(L[1]-N[1])**2)
