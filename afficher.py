@@ -3,6 +3,7 @@ from conversion import conversion
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from creer_liste_client import creer_liste_clent_csv
 
 from urllib.request import Request, urlopen
 from io import BytesIO
@@ -61,14 +62,24 @@ def actualiser_carte(liste_tripo):
     for elt in liste_tripo:
         elt.dot.set_offset(self.pos[0],self.pos[1])
 
-def liste_client(csv_name):
-    pass
-def boucle(n,v,liste_clients,t,capacity,charge,elp):
+
+def boucle(n,v,nb_clients,t,capacity,charge,elp):
     """n : nombre de triporteurs
        clients : liste d'objets de classe delivery_point
        dist : dist[i][j] renvoit la distance entre i et j"""
-    dist = pierre_balance(elp,liste_clients,calque)
+    list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
+    list_route=np.genfromtxt('liste_adjacence.csv',delimiter=',')
+    dico_points={}
+    for i,point in enumerate(list_coor):
+        dico_points[(point[0],point[1])]=[(list_coor[int(j)][0],list_coor[int(j)][1]) for j in list_route[i] if not np.isnan(j)]
+    def route(i,j):
+        if j in dico_points[i]:
+            return 1
+        else:
+            return 0
+    dist = graph(dico_point,liste_clients,bornes = [],elp)
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
+    creer_clients_csv(nb_clients,csv = "shops.csv")
     init_carte()
     while 1:
         algorithme(liste_tripo,dist,liste_clients,elp)
@@ -77,4 +88,5 @@ def boucle(n,v,liste_clients,t,capacity,charge,elp):
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo)
         time.sleep(t)
-boucle(5,1,liste_clients(nom),1,100,1000,elp,calque)
+boucle(5,1,nb_clients = 30,1,100,1000,elp,calque)
+plt.show()

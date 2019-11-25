@@ -10,9 +10,11 @@ def conversion(lat,longi):
     return (x_lamb-x_0,y_lamb-y_0)
 
 def conv2(lat_deg,lon_deg):
+  n = 2**zoom
   lat_rad = math.radians(lat_deg)
-  x = (lon_deg + 180.0) / 360.0
-  y = (1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 
+  xtile = int((lon_deg + 180.0) / 360.0 * n)
+  ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+
   return x,y
 
 #lat = 43.69795
