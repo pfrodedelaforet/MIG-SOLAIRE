@@ -8,6 +8,7 @@ from math import sqrt
 import random
 from collections import defaultdict
 from  mig_algo_energie_final import *
+from classes import *
 
 def distance_euc(L, N):
     return sqrt((L[0]-N[0])**2+(L[1]-N[1])**2)
@@ -112,7 +113,7 @@ def trouvpoint(coor, altitude, depart, arrivee, tdepuisdep):
 
 def approx(nodeslist, coor):
     for i in range(len(nodeslist)) :
-        distmin = float("inf") ; cmin = coor.keys()[0]
+        distmin = float("inf") ; cmin = list(coor.keys())[0]
         for c in coor.keys() : 
             if distance_euc(c, (nodeslist[i].latitude, nodeslist[i].longitude))<distmin:
                 distmin = distance_euc(c, (nodeslist[i].latitude, nodeslist[i].longitude))
@@ -122,10 +123,12 @@ def approx(nodeslist, coor):
 
 
 def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):
+    nodeslist = approx(nodeslist, coor)
     sousgraphe = defaultdict(dict)
-    for s in nodeslist + bornes + [elp] : 
+    liste = nodeslist + bornes + [elp]
+    for s in liste:
         sousgraphe[s] = {} 
-        for t in nodeslist + bornes + [elp] : 
+        for t in liste:
             progarthur = calcul_energy([(distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, stop)], velo, usager = 75, puissmax_usager = 250)
             if type(progarthur != str ): 
                 sousgraphe[s][t] = Poids(djikstra(grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
