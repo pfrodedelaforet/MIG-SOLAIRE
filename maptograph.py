@@ -117,7 +117,7 @@ def approx(nodeslist, coor):
             if distance_euc(c, (nodeslist[i].latitude, nodeslist[i].longitude))<distmin:
                 distmin = distance_euc(c, (nodeslist[i].latitude, nodeslist[i].longitude))
                 cmin = c
-        nodeslist[i] = cmin
+        nodeslist[i] = Point(cmin[0], cmin[1])
     return nodeslist
 
 
@@ -125,7 +125,7 @@ def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_us
     sousgraphe = defaultdict(dict)
     for s in nodeslist + bornes + [elp] : 
         sousgraphe[s] = {} 
-        for t in nodeslist + bornes + [elp]  : 
+        for t in nodeslist + bornes + [elp] : 
             progarthur = calcul_energy([(distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, stop)], velo, usager = 75, puissmax_usager = 250)
             if type(progarthur != str ): 
                 sousgraphe[s][t] = Poids(djikstra(grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
