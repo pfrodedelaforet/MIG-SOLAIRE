@@ -1,12 +1,17 @@
+from pyproj import Transformer
+
+
 
 class Point :
-    def __init__(self, lat, lon) :
+    def __init__(self, lat, lon):
+        transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+        transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
+
         self.latitude = lat
         self.longitude = lon
-        self.id = router.findNode(lat, lon)
         self.x = transformer_to_lamb.transform(lat,lon)[0]
         self.y = transformer_to_lamb.transform(lat,lon)[1]
-        self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
+        #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
         return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")

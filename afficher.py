@@ -6,10 +6,13 @@ import math
 from creer_liste_clients import creer_clients_csv
 from maptograph import graph
 from classes import *
+from pyproj import Transformer
 
 from urllib.request import Request, urlopen
 from io import BytesIO
 from PIL import Image
+transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
 
 
@@ -80,9 +83,9 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         else:
             return 0
     bornes = []
-    dist = graph(dico_point,liste_clients,bornes,elp)
+    liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
+    dist = graph(dico_points,liste_clients,bornes,elp)
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
-    creer_clients_csv(nb_clients,csv = "shops.csv")
     init_carte()
     while 1:
         algorithme(liste_tripo,dist,liste_clients,elp)
@@ -93,5 +96,5 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         time.sleep(t)
 nb_clients = 30
 elp = Point(43.707354, 7.282234)
-boucle(5,1,nb_clients,1,100,1000,elp,calque)
+boucle(5,1,nb_clients,1,100,1000,elp)
 plt.show()
