@@ -19,7 +19,7 @@ def speed(piet, i, j):
         return vitesse
 
 
-def grosgraph(coor):
+def grosgraph(coor, velo, usager = 75, puissmax_usager = 250):
     grosgraphe = {}
     for i in range(len(coor.keys())) : 
         p = Point(coor.keys()[i][0],coor.keys()[i][1])
@@ -30,11 +30,11 @@ def grosgraph(coor):
                 if random.randrange(1, 5) == 1:
                     stop.append(10 *k) #les 3 dernières lignes c'est la génération de la matrice stop aléatoirement
             q = Point(coor[coor.keys()[i]][j][0],coor[coor.keys()[i]][j][1])
-            progarthur = calcul_energy((distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude(coor.keys()[i][0], coor.keys()[i][1]), altitude(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1]), vitesse, stop))
-            grosgraphe[p][q] = progarthur[0] + puisempl * distance_euc(coor[i],coor[j])/speed(piet, i, j)  
+            progarthur = calcul_energy([(distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude(coor.keys()[i][0], coor.keys()[i][1]), altitude(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1]), vitesse, stop)], velo, usager = 75, puissmax_usager = 250)
+            grosgraphe[p][q] = progarthur[0] + puisempl * distance_euc(coor[i],coor[j])/progarthur[2]
     return grosgraphe
                 
-def graphvit(coor):
+def graphvit(coor, velo, usager = 75, puissmax_usager = 250):
     graphvit = {}
     for i in range(len(coor.keys())) : 
         p = Point(coor.keys()[i][0],coor.keys()[i][1])
@@ -80,37 +80,37 @@ def djikstra(graphe,etape,fin,visites,dist,P,depart):
     return djikstra(graphe, x_min, fin, visites, dist, P, depart)
     
 
-def path_clients(coor, nodeslist, bornes, elp):#nodeslist et bornes sont des listes de point
+def path_clients(coor, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):#nodeslist et bornes sont des listes de point
     M = {}
     for s in nodeslist.union(bornes.union(elp)):
         M[s] = {}
         for t in nodeslist.union(bornes.union(elp)):
-            M[s][t] = djikstra(grosgraphe(coor), s, t, [], graph[s], {}, s)[1]
+            M[s][t] = djikstra(grosgraphe(coor velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[1]
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
 
 
-def temps(coor, depart, arrivee):
-    t = 0; L = djikstra(grosgraphe(coor), depart, arrivee, [], graph[depart], {}, depart)[1] ; graphvitesse = graphvit(coor)
+def temps(coor, depart, arrivee, velo, usager = 75, puissmax_usager = 250):
+    t = 0; L = djikstra(grosgraphe(coor, velo, usager = 75, puissmax_usager = 250), depart, arrivee, [], graph[depart], {}, depart)[1] ; graphvitesse = graphvit(coor, velo, usager = 75, puissmax_usager = 250)
     for i in range(len(L)-1):
         t += distance_euc(L[i],L[i+1])/graphvitesse[L[i]][L[i+1]]
     return t 
 
 
 def trouvpoint(coor, depart, arrivee, tdepuisdep):
-    ttot = temps(coor, depart, arrivee) ; L = djikstra(grosgraphe(coor), depart, arrivee, [], graph[depart], {}, depart)[1]; i = 0
-    while temps(coor, depart, L[i])< tdepuisdep : 
+    ttot = temps(coor, depart, arrivee, velo, usager = 75, puissmax_usager = 250) ; L = djikstra(grosgraphe(coor), depart, arrivee, [], graph[depart], {}, depart)[1]; i = 0
+    while temps(coor, depart, L[i], velo, usager = 75, puissmax_usager = 250)< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
 
 
 
-def graph(coor, nodeslist, bornes, elp):
+def graph(coor, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):
     sousgraphe = {}
     for s in nodeslist.union(bornes.union(elp)) : 
         sousgraphe[s] = {} 
         for t in nodeslist.union(bornes.union(elp)) : 
-            progarthur = calcul_energy((distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude(coor.keys()[i][0], coor.keys()[i][1]), altitude(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1]), vitesse, stop))
+            progarthur = calcul_energy([(distance_euc(coor.keys()[i],coor[coor.keys()[i]][j]), altitude(coor.keys()[i][0], coor.keys()[i][1]), altitude(coor[coor.keys()[i]][j][0], coor[coor.keys()[i]][j][1]), vitesse, stop)], velo, usager = 75, puissmax_usager = 250)
             if type(progarthur != str ): 
-                sousgraphe[s][t] = Poids(djikstra(grosgraphe(coor, route, piet), s, t, [], graph[s], {}, s)[0], temps(coor, route, piet, piet_coor, depart, arrivee),True)
+                sousgraphe[s][t] = Poids(djikstra(grosgraphe(coor, velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[0], temps(coor, depart, arrivee),True)
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
