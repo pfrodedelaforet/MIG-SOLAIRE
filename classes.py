@@ -13,7 +13,7 @@ class Point :
         #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
-        return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
+        return (f"point de latitude {self.latitude}, de longitude {self.longitude}, x={self.x}, y={self.y} ")
 class DeliveryPoint(Point):
     def __init__(self, lat, lon, t1, t2, masse):
         Point.__init__(self, lat, lon)
