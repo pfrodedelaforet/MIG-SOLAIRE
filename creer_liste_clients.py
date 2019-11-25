@@ -23,4 +23,7 @@ def creer_clients_csv(nb_clients,csv="shops.csv",horaire = (8*3600,18*3600)):
     csample['horaires'] = np.full(len(csample['osm_id']),horaire[0])
     csample['delivery_point'] = tdp(csample['lat'],csample['lon'],np.full(len(csample['osm_id']),horaire[0]),np.full(len(csample['osm_id']),horaire[1]),csample['poids'])
     dps = csample['delivery_point']
-    return(dps)
+    cl = []
+    for i in dps:
+        cl.append(i)
+    return(cl)
