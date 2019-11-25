@@ -88,9 +88,9 @@ def djikstra(graphe,etape,fin,visites,dist,P,depart):
 
 def path_clients(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):#nodeslist et bornes sont des listes de point
     M = {}
-    for s in nodeslist.union(bornes.union(elp)):
+    for s in nodeslist+bornes+elp:
         M[s] = {}
-        for t in nodeslist.union(bornes.union(elp)):
+        for t in nodeslist+bornes+elp:
             M[s][t] = djikstra(grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[1]
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
 
