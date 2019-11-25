@@ -2,8 +2,17 @@ from pyproj import Transformer
 import math
 transformer_to_lamb= Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
 
+lat = 43.69795
+longi = 7.26763
+
+delta_lat = 0.00746
+delta_lon = 0.0251
+
 x_0,y_0=transformer_to_lamb.transform(7.26528, 43.69422 )
 x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
+
+#x_0,y_0=transformer_to_lamb.transform(
+#x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
 
 def conversion(lat,longi):
     x_lamb,y_lamb=transformer_to_lamb.transform(lat,longi)

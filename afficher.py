@@ -39,8 +39,10 @@ def init_carte():
 
     def getImageCluster(lat_deg, lon_deg, delta_lat,  delta_long, zoom):
         smurl = r"http://a.tile.openstreetmap.org/{0}/{1}/{2}.png"
-        xmin, ymax =deg2num(lat_deg, lon_deg, zoom)
-        xmax, ymin =deg2num(lat_deg + delta_lat, lon_deg + delta_long, zoom)
+        xmin, ymax = deg2num(lat_deg, lon_deg, zoom)
+        latmin,longmax = num2deg(xmin,ymax)
+        xmax, ymin = deg2num(lat_deg + delta_lat, lon_deg + delta_long, zoom)
+        latmax,longmin = num2deg(xmax,ymin)
 
         Cluster = Image.new('RGB',((xmax-xmin+1)*256-1,(ymax-ymin+1)*256-1) ) 
         for xtile in range(xmin, xmax+1):
@@ -52,7 +54,7 @@ def init_carte():
                 tile = Image.open(BytesIO(imgstr))
                 Cluster.paste(tile, box=((xtile-xmin)*256 ,  (ytile-ymin)*255))
 
-        return (Cluster,xmin,xmax,ymin,ymax)
+        return (Cluster,latmin,latmax,longmin,longmax)
 
 
     lat = 43.69795
@@ -62,6 +64,8 @@ def init_carte():
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])
     plt.imshow(tab)
+    xmin,ymax = conversion(a[1],a[4])
+    xmax, ymin = conversion(a[2],a[3])
     echelles = [a[1],a[2],a[3],a[4],len(tab),len(tab[0])]
 
 def actualiser_carte(liste_tripo): 
