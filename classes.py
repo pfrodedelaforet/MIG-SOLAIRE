@@ -16,7 +16,7 @@ class Point :
     def __repr__(self) :
         return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2,poids):
+    def __init__(self, lat, lon, t1, t2, masse):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2

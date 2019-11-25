@@ -7,6 +7,8 @@ from creer_liste_clients import creer_clients_csv
 from maptograph import graph
 from classes import *
 from pyproj import Transformer
+from optimisation_des_tournees import Clarke
+from mig_algo_energie_final import Velo
 
 from urllib.request import Request, urlopen
 from io import BytesIO
@@ -81,7 +83,7 @@ def dicos():
     altitude_route=np.genfromtxt('altitude_route.csv',delimiter=',')
     altitude={}
     for i,point in enumerate(list_coor):
-        altitude[(point[0],point[1])]i = altitude_route[i]
+        altitude[(point[0],point[1])] = altitude_route[i]
     
     return dico_points, altitude
 
@@ -94,13 +96,14 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
 
     dico_points,altitude = dicos()
-    dist = graph(dico_points,liste_clients,bornes,elp)
+    dist = graph(dico_points,altitude,liste_clients,bornes,elp,Velo(400))
 
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
 
     init_carte()
     while 1:
-        algorithme(liste_tripo,dist,liste_clients,elp)
+        print("boucle")
+        Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
