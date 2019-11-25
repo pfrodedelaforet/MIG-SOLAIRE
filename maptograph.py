@@ -6,6 +6,7 @@ vitessepiet = 10/3.6
 vitesse = 25/3.6
 from math import sqrt
 import random
+from collections import defaultdict
 
 def distance_euc(L, N):
     return sqrt((L[0]-N[0])**2+(L[1]-N[1])**2)
@@ -29,7 +30,7 @@ def stop(coor):
     return tabstop
 
 def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
-    grosgraphe = {}
+    grosgraphe = defaultdict(dict)
     for i in range(len(coor.keys())) : 
         p = Point(coor.keys()[i][0],coor.keys()[i][1])
         grosgraphe[p] = {}
@@ -56,7 +57,7 @@ def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
 
 
 def recurs(graphe, x, s, t, P):
-    M={}
+    M=[]
     if P[x] == s:
         M.append(s)
         M.reverse()
@@ -87,7 +88,7 @@ def djikstra(graphe,etape,fin,visites,dist,P,depart):
     
 
 def path_clients(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):#nodeslist et bornes sont des listes de point
-    M = {}
+    M = defaultdict(dict)
     for s in nodeslist+bornes+[elp]:
         M[s] = {}
         for t in nodeslist+bornes+[elp]:
@@ -111,7 +112,7 @@ def trouvpoint(coor, altitude, depart, arrivee, tdepuisdep):
 
 
 def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):
-    sousgraphe = {}
+    sousgraphe = defaultdict(dict)
     for s in nodeslist + bornes + [elp] : 
         sousgraphe[s] = {} 
         for t in nodeslist + bornes + [elp]  : 
