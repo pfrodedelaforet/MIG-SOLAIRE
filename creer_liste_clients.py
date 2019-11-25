@@ -18,9 +18,9 @@ tdp = np.vectorize(to_delivery_point)
         
 def creer_clients_csv(nb_clients,csv="shops.csv",horaire = (8*3600,18*3600)):
     clients = pd.read_csv(csv)
-    clients['poids'] = ci(rd.sample(len(clients['osm_id']))) 
-    clients['horaires'] = np.full(len(clients['osm_id']),horaire[0])
-    clients['delivery_point'] = tdp(clients['lat'],clients['lon'],np.full(len(clients['osm_id']),horaire[0]),np.full(len(clients['osm_id']),horaire[1]),clients['poids'])
-    dps = clients['delivery_point']
-    return(rd.choice(dps,nb_clients,replace=False))
-    
+    csample = clients.sample(nb_clients)
+    csample['poids'] = ci(rd.sample(len(csample['osm_id']))) 
+    csample['horaires'] = np.full(len(csample['osm_id']),horaire[0])
+    csample['delivery_point'] = tdp(csample['lat'],csample['lon'],np.full(len(csample['osm_id']),horaire[0]),np.full(len(csample['osm_id']),horaire[1]),csample['poids'])
+    dps = csample['delivery_point']
+    return(dps)
