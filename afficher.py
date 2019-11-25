@@ -13,8 +13,8 @@ from mig_algo_energie_final import Velo
 from urllib.request import Request, urlopen
 from io import BytesIO
 from PIL import Image
-transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
-transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
+#transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+#transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
 
 
@@ -113,3 +113,4 @@ nb_clients = 30
 elp = Point(43.707354, 7.282234)
 boucle(5,1,nb_clients,1,100,1000,elp)
 plt.show()
+
