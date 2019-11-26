@@ -126,8 +126,8 @@ def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_us
     for s in nodeslist + bornes + [elp] : 
         sousgraphe[s] = {} 
         for t in nodeslist + bornes + [elp] : 
-            progarthur = calcul_energy([(distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, stop)], velo, usager = 75, puissmax_usager = 250)
+            progarthur = calcul_energy([(distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, stop)], velo, usager, puissmax_usager)
             if type(progarthur != str ): 
-                sousgraphe[s][t] = Poids(djikstra(grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250), s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
+                sousgraphe[s][t] = Poids(djikstra(grosgraph(coor, altitude, velo, usager, puissmax_usager), s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
