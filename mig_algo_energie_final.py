@@ -13,7 +13,6 @@ class Segment:
         self.pente=max(np.arcsin((alt_fin-alt_dep)/l),0) #flottant (en radian)
         d_loc=l-self.Lieu.d_acc#distance en régime établit
         if dem==True:
-            print(self.Velo.d_dem)
             if l<self.Velo.d_dem:
                 self.pui_rap_max=max((1/rap)*(self.Velo.m*l*self.Velo.a_dem+self.Velo.m*9.81*l*sin(self.pente)/sqrt(2*l/self.Velo.a_dem))-usager,0)
                 ene=max((1/rap)*(self.Velo.m*l*self.Velo.a_dem+self.Velo.m*9.81*l*sin(self.pente))-usager*sqrt(2*l/self.Velo.a_dem),0)
@@ -98,7 +97,6 @@ def calcul_tot(chemin,Velo,usager,puiss_max_cycliste):#cf PMA: 250W chez les cyc
     powerlim=Velo.puiss_max+usager
     real_powerlim=Velo.puiss_max+puiss_max_cycliste
     for seg in res:
-        print(seg)
         energy_tot+=seg[0]
         if seg[1]>powerlim:
             if seg[1]>real_powerlim:

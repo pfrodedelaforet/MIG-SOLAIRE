@@ -30,7 +30,7 @@ def stop(coor):
         p = Point(list(coor.keys())[i][0],list(coor.keys())[i][1])
         for j in range(len(coor[list(coor.keys())[i]])) :
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1]) ; tabstop[p][q] = [] 
-            for k in range(int(distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/10)):
+            for k in range(1,int(distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/10)):
                 if random.randrange(1, 5) == 1:
                     tabstop[p][q].append(10 *k)
     return tabstop
@@ -44,8 +44,10 @@ def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             if p != q: 
                 progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, tabstop[p][q]]], velo, usager , puissmax_usager)
-                if type(progarthur != str):
+                if type(progarthur) != str:
                     grosgraphe[p][q] = progarthur[0] + usager * distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/progarthur[2]
+                else : 
+                    grosgraphe[p][q] = float("inf")
     return (grosgraphe, tabstop)
                 
 def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
@@ -61,8 +63,10 @@ def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             if p!=q:
                 progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, stop(coor)[p][q]]], velo, usager , puissmax_usager)
-                if type(progarthur != str):
+                if type(progarthur) != str:
                     graphvit[p][q] = progarthur[2]
+                else :
+                    grosgraphe[p][q] = float("inf")
     return graphvit #graphvit est un graphe de point donnant la vitesse entre pointi et pointj si pointi et pointj sont adjacents
 
 
@@ -138,11 +142,10 @@ def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_us
     for s in liste:
         sousgraphe[s] = {} 
         for t in liste:
-            if distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)) ==0:
-                print(s,t)
-            if s != t:
+            ener = djikstra(grosgraphe[O], s, t, [], graph[s], {}, s)[0]
+            if s != t and ener != float("inf"):
                 progarthur = calcul_energy([[distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, grosgraphe[1][s][t]]], velo, usager, puissmax_usager)
-                if type(progarthur != str ):
-                    sousgraphe[s][t] = Poids(djikstra(grosgraphe[O], s, t, [], graph[s], {}, s)[0], temps(coor, s, t),True)
+                sousgraphe[s][t] = Poids(ener, temps(coor, s, t),True)
+                
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 

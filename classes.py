@@ -34,6 +34,9 @@ class DeliveryPoint(Point):
 
 
 class Triporteur:
+    def convert(x,y,echelles):
+        xmin,xmax,ymin,ymax,xt,yt = echelles
+        return (x/(xmax-xmin)*xt,y/(ymax-ymin)*yt)
     def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.charge = charge #flottant : charge du triporteur : en w.h
