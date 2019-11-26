@@ -7,12 +7,15 @@ from creer_liste_clients import creer_clients_csv
 from maptograph import graph
 from classes import *
 from pyproj import Transformer
+from optimisation_des_tournees import Clarke
+from mig_algo_energie_final import Velo
+import random
 
 from urllib.request import Request, urlopen
 from io import BytesIO
 from PIL import Image
-transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
-transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
+#transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+#transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
 
 
@@ -37,8 +40,10 @@ def init_carte():
 
     def getImageCluster(lat_deg, lon_deg, delta_lat,  delta_long, zoom):
         smurl = r"http://a.tile.openstreetmap.org/{0}/{1}/{2}.png"
-        xmin, ymax =deg2num(lat_deg, lon_deg, zoom)
-        xmax, ymin =deg2num(lat_deg + delta_lat, lon_deg + delta_long, zoom)
+        xmin, ymax = deg2num(lat_deg, lon_deg, zoom)
+        latmin,longmax = num2deg(xmin,ymax)
+        xmax, ymin = deg2num(lat_deg + delta_lat, lon_deg + delta_long, zoom)
+        latmax,longmin = num2deg(xmax,ymin)
 
         Cluster = Image.new('RGB',((xmax-xmin+1)*256-1,(ymax-ymin+1)*256-1) ) 
         for xtile in range(xmin, xmax+1):
@@ -50,7 +55,7 @@ def init_carte():
                 tile = Image.open(BytesIO(imgstr))
                 Cluster.paste(tile, box=((xtile-xmin)*256 ,  (ytile-ymin)*255))
 
-        return (Cluster,xmin,xmax,ymin,ymax)
+        return (Cluster,latmin,latmax,longmin,longmax)
 
 
     lat = 43.69795
@@ -60,6 +65,8 @@ def init_carte():
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])
     plt.imshow(tab)
+    xmin,ymax = conversion(a[1],a[4])
+    xmax, ymin = conversion(a[2],a[3])
     echelles = [a[1],a[2],a[3],a[4],len(tab),len(tab[0])]
 
 def actualiser_carte(liste_tripo): 
@@ -81,9 +88,16 @@ def dicos():
     altitude_route=np.genfromtxt('altitude_route.csv',delimiter=',')
     altitude={}
     for i,point in enumerate(list_coor):
-        altitude[(point[0],point[1])]i = altitude_route[i]
+        altitude[(point[0],point[1])] = altitude_route[i]
     
     return dico_points, altitude
+
+def liste_provisoire(nb_clients,altitude):
+    l = []
+    for i in range(nb_clients):
+        l.append(random.choice(list(altitude.items())))
+    return l
+
 
 def boucle(n,v,nb_clients,t,capacity,charge,elp):
     """n : nombre de triporteurs
@@ -94,13 +108,14 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
 
     dico_points,altitude = dicos()
-    dist = graph(dico_points,liste_clients,bornes,elp)
+    dist = graph(dico_points,altitude,liste_clients,bornes,elp,Velo(400))
 
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
 
     init_carte()
     while 1:
-        algorithme(liste_tripo,dist,liste_clients,elp)
+        print("boucle")
+        Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
@@ -110,3 +125,4 @@ nb_clients = 30
 elp = Point(43.707354, 7.282234)
 boucle(5,1,nb_clients,1,100,1000,elp)
 plt.show()
+
