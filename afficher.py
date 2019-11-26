@@ -67,7 +67,8 @@ def init_carte():
     plt.imshow(tab)
     xmin,ymax = conversion(a[1],a[4])
     xmax, ymin = conversion(a[2],a[3])
-    echelles = [a[1],a[2],a[3],a[4],len(tab),len(tab[0])]
+    echelles = [xmin,xmax,ymin,ymax,len(tab),len(tab[0])]
+    return echelles
 
 def actualiser_carte(liste_tripo): 
     """liste_tripo : liste d'objets de type triporteur"""
@@ -112,7 +113,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 
     liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
 
-    init_carte()
+    echelles = init_carte()
     while 1:
         print("boucle")
         Clarke(liste_tripo,dist,liste_clients,elp)
