@@ -1,0 +1,1 @@
+-vérifier que xmin ymin xmax ymax sont bien dans les coins du tableau (par ex afficher un point en ces coordonnées-la)

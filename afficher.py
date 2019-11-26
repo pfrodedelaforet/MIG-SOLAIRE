@@ -58,9 +58,13 @@ def init_carte():
         return (Cluster,latmin,latmax,longmin,longmax)
 
 
-    lat = 43.69795
-    longi = 7.26763
-    a = getImageCluster(lat,longi, 0.00746,0.0251, 16)
+    lat = 43.6942
+    longi = 7.2652
+    delta_lat = 0.00746
+    delta_lon = 0.0149
+    zoom = 16
+
+    a = getImageCluster(lat,longi,delta_lat,delta_long,zoom)
     fig = plt.figure()
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])
@@ -73,7 +77,8 @@ def init_carte():
 def actualiser_carte(liste_tripo,echelles): 
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
-        elt.actualiser(self.pos[0],self.pos[1],echelles)
+        xy = Triporteur.convert(self.pos[0],self.pos[1],echelles)
+        elt.dot.set_offsets(xy[0],xy[1])
 
 def dicos():
     list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
@@ -111,9 +116,9 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     dico_points,altitude = dicos()
     dist = graph(dico_points,altitude,liste_clients,bornes,elp,Velo(400))
 
-    liste_tripo = [Triporteur(capacity, charge, elp,v) for i in range(n)]
 
     echelles = init_carte()
+    liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     while 1:
         print("boucle")
         Clarke(liste_tripo,dist,liste_clients,elp)
