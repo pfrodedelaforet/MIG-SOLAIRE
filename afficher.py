@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from creer_liste_clients import creer_clients_csv
-from maptograph import graph
+from maptograph import graph, coor_point
 from classes import *
 from pyproj import Transformer
 from optimisation_des_tournees import Clarke
@@ -114,7 +114,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
 
     dico_points,altitude = dicos()
-    dist = graph(dico_points,altitude,liste_clients,bornes,elp,Velo(400))
+    dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
 
 
     echelles = init_carte()

@@ -65,8 +65,7 @@ def graphvit(coor_points, altitude, velo, usager = 75, puissmax_usager = 250):
     return graphvit #graphvit est un graphe de point donnant la vitesse entre pointi et pointj si pointi et pointj sont adjacents
 
 
-def recurs(graphe, x, s, t, P):
-    M=[]
+def recurs(graphe, x, M, s, t, P):
     if P[x] == s:
         M.append(s)
         M.reverse()
@@ -77,8 +76,8 @@ def recurs(graphe, x, s, t, P):
         
 
 def djikstra(graphe,etape,fin,visites,dist,P,depart):
-    if etape == fin : 
-        return (dist[fin], recurs(graphe, fin, depart, fin, P))
+    if etape == fin and P !={}: 
+        return (dist[fin], recurs(graphe, fin, [], depart, fin, P))
     if len(visites) == 0:
         dist[etape] = 0
     for voisin in graphe[etape].keys():
@@ -86,6 +85,7 @@ def djikstra(graphe,etape,fin,visites,dist,P,depart):
             if dist[voisin]>dist[etape] + graphe[etape][voisin]:
                 dist[voisin] = dist[etape]+graphe[etape][voisin]
                 P[voisin] = etape
+    print(P)
     visites.append(etape)
     distance = float('inf')
     for x in graphe.keys():
@@ -95,18 +95,24 @@ def djikstra(graphe,etape,fin,visites,dist,P,depart):
                 distance = dist[x]
     return djikstra(graphe, x_min, fin, visites, dist, P, depart)
     
+def argdjikstra(coor_points, depart, graphe):
+    D={p:float("inf") for p in list(coor_points.keys())}
+    for s in coor_points[depart]:
+        D[s] = graphe[depart][s]
+    return D
 
 def path_clients(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):#nodeslist et bornes sont des listes de point
     M = defaultdict(dict)
     for p in nodeslist+bornes+[elp]:
-        M[p] = {}
+        M[p] = {} ; grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
         for q in nodeslist+bornes+[elp]:
-            M[p][q] = djikstra(grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0], p, q, [], coor_point[p], {}, p)[1]
+            M[p][q] = djikstra(grosgraphe, p, q, [], argdjikstra(coor_points, p, grosgraphe), {}, p)[1]
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
 
 
 def temps(coor_points, altitude, depart, arrivee, velo, usager = 75, puissmax_usager = 250):
-    t = 0; L = djikstra(grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0], depart, arrivee, [], coor_points[depart], {}, depart)[1] #on récup le path entre les deux points
+    t = 0; grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
+    L = djikstra(grosgraphe, depart, arrivee, [], argdjikstra(coor_points, p, grosgraphe), {}, depart)[1] #on récup le path entre les deux points
     graphvitesse = graphvit(coor_points, velo, usager, puissmax_usager )
     for i in range(len(L)-1):
         t += distance_euc(L[i],L[i+1])/graphvitesse[L[i]][L[i+1]]
@@ -114,7 +120,8 @@ def temps(coor_points, altitude, depart, arrivee, velo, usager = 75, puissmax_us
 
 
 def trouvpoint(coor_points, altitude, depart, arrivee, tdepuisdep, velo, usager = 75, puissmax_usager = 250):
-    i = 0 ; L = djikstra(grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0], depart, arrivee, [], coor_points[depart], {}, depart)[1]
+    i = 0 ; grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
+    L = djikstra(grosgraphe, depart, arrivee, [], argdjikstra(coor_points, p, grosgraphe), {}, depart)[1]
     while temps(coor_points, altitude, depart, L[i], velo, usager , puissmax_usager )< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
@@ -134,11 +141,11 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
     sousgraphe = defaultdict(dict)
     liste = nodeslist + bornes + [elp]
     liste = approx(liste, coor_points) #bien une liste de points
-    grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)
+    grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
     for p in liste:
         sousgraphe[p] = {} 
         for q in liste:
-            ener = djikstra(grosgraphe[0], p, q, [], coor_points[p], {}, p)[0]
+            ener = djikstra(grosgraphe, p, q, [], argdjikstra(coor_points, p, grosgraphe), {}, p)[0]
             if (p != q and ener != float("inf")):
                 sousgraphe[p][q] = Poids(ener, temps(coor_points, altitude, p, q, velo, usager, puissmax_usager),True)
                 
