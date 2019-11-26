@@ -13,7 +13,7 @@ class Point :
         #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
-        return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
+        return (f"point de latitude {self.latitude}, de longitude {self.longitude}")
     
     def __eq__(self, other):
         return ((self.latitude == other.latitude) and (self.longitude == other.longitude))
@@ -25,7 +25,7 @@ class DeliveryPoint(Point):
         self.t2 = t2
         self.masse = masse #masse du colis a livrer en kg
     def __repr__(self):
-        return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
+        return (Point.__repr__(self)+f"il veut etre livre entre {self.t1} et {self.t2}")
     
     def __eq__(self, other):
         return ((self.latitude, self.longitude, self.t1, self.t2, self.masse)==(other.latitude, other.longitude, other.t1, oter.t2, other.masse))
