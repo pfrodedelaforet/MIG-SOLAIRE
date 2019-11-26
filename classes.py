@@ -17,6 +17,8 @@ class Point :
     
     def __eq__(self, other):
         return ((self.latitude == other.latitude) and (self.longitude == other.longitude))
+    def __hash__(self):
+        return hash(str(self))
 
 class DeliveryPoint(Point):
     def __init__(self, lat, lon, t1, t2,masse):
