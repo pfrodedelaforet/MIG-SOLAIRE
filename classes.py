@@ -3,19 +3,20 @@ from pyproj import Transformer
 
 
 class Point :
-    _transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
     def __init__(self, lat, lon):
+        transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+        transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
         self.latitude = lat
         self.longitude = lon
-        self.x = Point._transformer_to_lamb.transform(lat,lon)[0]
-        self.y = Point._transformer_to_lamb.transform(lat,lon)[1]
+        self.x = transformer_to_lamb.transform(lat,lon)[0]
+        self.y = transformer_to_lamb.transform(lat,lon)[1]
         #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
-        return (f"point de latitude {self.latitude}, de longitude {self.longitude}, x={self.x}, y={self.y} ")
+        return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2, masse):
+    def __init__(self, lat, lon, t1, t2,poids):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2
@@ -23,7 +24,7 @@ class DeliveryPoint(Point):
     def __repr__(self):
         return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
 class Triporteur:
-    def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur):
+    def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.charge = charge #flottant : charge du triporteur : en w.h
         self.pos = [elp.x,elp.y]
@@ -34,6 +35,8 @@ class Triporteur:
         self.prop_arrete = 0
         self.puissance_batterie=puissance_batterie
         self.puissance_moteur=puissance_moteur
+        self.batterie_capacity=batterie_capacity
+        self.time_to_be_fully_charged=(batterie_capacity-charge)/puissance_batterie
         xy = convert(self.pos[0],self.pos[1],echelles)
         self.dot = plt.scatter(xy[0],xy[1],s=100)
     def avancer(self,dist,t):
