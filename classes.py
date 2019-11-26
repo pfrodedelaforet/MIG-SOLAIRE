@@ -3,26 +3,34 @@ from pyproj import Transformer
 
 
 class Point :
+    transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+    transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
     def __init__(self, lat, lon):
-        transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
-        transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
-
         self.latitude = lat
         self.longitude = lon
-        self.x = transformer_to_lamb.transform(lat,lon)[0]
-        self.y = transformer_to_lamb.transform(lat,lon)[1]
+        self.x = Point.transformer_to_lamb.transform(lat,lon)[0]
+        self.y = Point.transformer_to_lamb.transform(lat,lon)[1]
         #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
         return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
+    
+    def __eq__(self, other):
+        return ((self.latitude == other.latitude) and (self.longitude == other.longitude))
+
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2,poids):
+    def __init__(self, lat, lon, t1, t2,masse):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2
         self.masse = masse #masse du colis a livrer en kg
     def __repr__(self):
         return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
+    
+    def __eq__(self, other):
+        return ((self.latitude, self.longitude, self.t1, self.t2, self.masse)==(other.latitude, other.longitude, other.t1, oter.t2, other.masse))
+
+
 class Triporteur:
     def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity):
         self.capacity = capacity #flottant : poids qu'il peut porter
