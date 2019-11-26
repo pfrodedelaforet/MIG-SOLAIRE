@@ -7,8 +7,8 @@ longi = 7.2652
 
 delta_lat = 0.00746
 delta_lon = 0.0149
-x_0,y_0=transformer_to_lamb.transform(lon,lat)
-x_fin,y_fin=transformer_to_lamb.transform(lon + delta_lon,lat + delta_lat)
+x_0,y_0=transformer_to_lamb.transform(longi,lat)
+x_fin,y_fin=transformer_to_lamb.transform(longi + delta_lon,lat + delta_lat)
 
 #x_0,y_0=transformer_to_lamb.transform(
 #x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
