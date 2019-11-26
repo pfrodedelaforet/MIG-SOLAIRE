@@ -43,7 +43,8 @@ def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
         for j in range(len(coor[list(coor.keys())[i]])) :
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, tabstop[p][q]]], velo, usager , puissmax_usager)
-            grosgraphe[p][q] = progarthur[0] + usager * distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/progarthur[2]
+            if p != q:    
+                grosgraphe[p][q] = progarthur[0] + usager * distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/progarthur[2]
     return (grosgraphe, tabstop)
                 
 def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
@@ -58,7 +59,8 @@ def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
                     stop.append(10 *k) #les 3 dernières lignes c'est la génération de la matrice stop aléatoirement
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, stop(coor)[p][q]]], velo, usager , puissmax_usager)
-            graphvit[p][q] = progarthur[2]
+            if p!=q:
+                graphvit[p][q] = progarthur[2]
     return graphvit #graphvit est un graphe de point donnant la vitesse entre pointi et pointj si pointi et pointj sont adjacents
 
 
