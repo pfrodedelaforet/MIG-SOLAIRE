@@ -14,8 +14,8 @@ transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=T
 transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
 def distance_euc(L, N):
-    L_ = transformer_to_lamb.transform(L)
-    N_ = transformer_to_lamb.transform(N)
+    L_ = transformer_to_lamb.transform(L[0], L[1])
+    N_ = transformer_to_lamb.transform(N[0], N[1])
     return sqrt((L_[0]-N_[0])**2+(L_[1]-N_[1])**2)
 
 def speed(piet, i, j):
