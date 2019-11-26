@@ -3,18 +3,21 @@ from pyproj import Transformer
 
 
 class Point :
+    transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+    transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
     def __init__(self, lat, lon):
-        transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
-        transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
-
         self.latitude = lat
         self.longitude = lon
-        self.x = transformer_to_lamb.transform(lat,lon)[0]
-        self.y = transformer_to_lamb.transform(lat,lon)[1]
+        self.x = Point.transformer_to_lamb.transform(lat,lon)[0]
+        self.y = Point.transformer_to_lamb.transform(lat,lon)[1]
         #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
         return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
+    
+    def __eq__(self, other):
+        return ((self.latitude == other.latitude) and (self.longitude == other.longitude))
+
 class DeliveryPoint(Point):
     def __init__(self, lat, lon, t1, t2,masse):
         Point.__init__(self, lat, lon)
@@ -23,6 +26,11 @@ class DeliveryPoint(Point):
         self.masse = masse #masse du colis a livrer en kg
     def __repr__(self):
         return (Point.__repr__(self)+f"il veut être livré entre {self.t1} et {self.t2}")
+    
+    def __eq__(self, other):
+        return ((self.latitude, self.longitude, self.t1, self.t2, self.masse)==(other.latitude, other.longitude, other.t1, oter.t2, other.masse))
+
+
 class Triporteur:
     def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity):
         self.capacity = capacity #flottant : poids qu'il peut porter
@@ -89,7 +97,7 @@ def _tourns(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des 
 
 class Tournee:
     def __init__(self,i0,elp,dist,clients):#i0 est un indice, elp un point et dist une fonction de la forme i -> j -> poids ou i et j sont des points, clients est une liste de DeliveryPoint
-        self.poids = Poids(dist(elp,clients[i0]) + dist(clients[i0],elp))
+        self.poids = dist(elp,clients[i0]) + dist(clients[i0],elp)
         self.elp = elp
         self.indices = [i0] #il est implicite qu'une tournee commence et finit par l'elp, il faut prendre cela en compte, les points sont un couple DeliveryPoint, heure d'arrivee presumee(en secondes, on suppose qu'on est a l'elp a t = 0)
         self.temps = [dist(elp,clients[i0]).duree]
