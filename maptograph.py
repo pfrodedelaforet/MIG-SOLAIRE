@@ -138,6 +138,8 @@ def graph(coor, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_us
     for s in liste:
         sousgraphe[s] = {} 
         for t in liste:
+            if distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)) ==0:
+                print(s,t)
             if s != t:
                 progarthur = calcul_energy([[distance_euc((s.latitude,s.longitude),(t.latitude, t.longitude)), altitude[(s.latitude, s.longitude)], altitude[(t.latitude, t.longitude)], vitesse, grosgraphe[1][s][t]]], velo, usager, puissmax_usager)
                 if type(progarthur != str ):
