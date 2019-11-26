@@ -83,18 +83,22 @@ class Poids:
     def __sub__(self,other):
         return Poids(self.energie-other.energie,self.duree - other.duree, self.faisable)
 
-class Tournee:#C'est pour le programme de Jeremy    
-    def __init__(self,i0,elp,graphe,clients):#i0 est un indice, elp un point et graphe un dictionnaire de la forme d{i{j}} : poids ou i et j sont des pointsn clients est une liste de DeliveryPoint
-        self.poids = Poids(graphe[elp][clients[i0]] + graphe[clients[i0]][elp])
+#C'est pour le programme de Jeremy    
+def _tourns(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des tournees c'est une matrice len(pts)² ,i et j sont des indices, clients une liste de DeliveryPoint
+    return(dist(clients[i],elp) + dist(elp,clients[j]) - dist(clients[i],clients[j]))
+
+class Tournee:
+    def __init__(self,i0,elp,dist,clients):#i0 est un indice, elp un point et dist une fonction de la forme i -> j -> poids ou i et j sont des points, clients est une liste de DeliveryPoint
+        self.poids = Poids(dist(elp,clients[i0]) + dist(clients[i0],elp))
         self.elp = elp
         self.indices = [i0] #il est implicite qu'une tournee commence et finit par l'elp, il faut prendre cela en compte, les points sont un couple DeliveryPoint, heure d'arrivee presumee(en secondes, on suppose qu'on est a l'elp a t = 0)
-        self.temps = [graphe[elp][clients[i0]].duree]
+        self.temps = [dist(elp,clients[i0].duree]
         self.clients = clients
-        self.graphe = graphe
+        self.dist = dist
         self.masse = clients[i0].masse
-        
+    
     def __add__(self,other):#Pas du tout commutatif
-        tmp = tournee(self.indices[0],self.elp,self.graphe,self.clients)
+        tmp = tournee(self.indices[0],self.elp,self.dist,self.clients)
         ttourn1 = self.temps[-1]
         ot = other.temps.copy()
         elp = self.elp
@@ -103,9 +107,9 @@ class Tournee:#C'est pour le programme de Jeremy
         j = other.indices[0]
         clients = self.clients
         for k in range(len(ot)): #il faut changer le moment de passage de la deuxieme tournee
-            ot[k] += graphe[clients[i]][clients[j]].duree + ti - graphe[elp][clients[j]].duree
+            ot[k] += dist(clients[i],clients[j]).duree + ti - dist(elp,clients[j]).duree
             
         tmp.temps = self.indices + ot
-        tmp.poids = self.poids + other.poids - s(self.clients,self.graphe,self.indices[-1],other.indices[0])
+        tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0])
         tmp.masse = self.masse + other.masse
         return(tmp)
