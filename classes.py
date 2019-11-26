@@ -16,7 +16,7 @@ class Point :
     def __repr__(self) :
         return (f"point de latitude {self.latitude}, de longitude {self.longitude}, d'altitude {self.alti}, x={self.x}, y={self.y} ")
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2,poids):
+    def __init__(self, lat, lon, t1, t2,masse):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2
@@ -89,10 +89,10 @@ def _tourns(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des 
 
 class Tournee:
     def __init__(self,i0,elp,dist,clients):#i0 est un indice, elp un point et dist une fonction de la forme i -> j -> poids ou i et j sont des points, clients est une liste de DeliveryPoint
-        self.poids = Poids(dist(elp,clients[i0]) + dist(clients[i0],elp))
+        self.poids = dist(elp,clients[i0]) + dist(clients[i0],elp)
         self.elp = elp
         self.indices = [i0] #il est implicite qu'une tournee commence et finit par l'elp, il faut prendre cela en compte, les points sont un couple DeliveryPoint, heure d'arrivee presumee(en secondes, on suppose qu'on est a l'elp a t = 0)
-        self.temps = [dist(elp,clients[i0].duree]
+        self.temps = [dist(elp,clients[i0]).duree]
         self.clients = clients
         self.dist = dist
         self.masse = clients[i0].masse
