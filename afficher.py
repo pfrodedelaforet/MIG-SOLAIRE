@@ -9,6 +9,7 @@ from classes import *
 from pyproj import Transformer
 from optimisation_des_tournees import Clarke
 from mig_algo_energie_final import Velo
+import random
 
 from urllib.request import Request, urlopen
 from io import BytesIO
@@ -90,6 +91,13 @@ def dicos():
         altitude[(point[0],point[1])] = altitude_route[i]
     
     return dico_points, altitude
+
+def liste_provisoire(nb_clients,altitude):
+    l = []
+    for i in range(nb_clients):
+        l.append(random.choice(list(altitude.items())))
+    return l
+
 
 def boucle(n,v,nb_clients,t,capacity,charge,elp):
     """n : nombre de triporteurs
