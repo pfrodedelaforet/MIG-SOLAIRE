@@ -44,7 +44,7 @@ def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             if p != q: 
                 progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, tabstop[p][q]]], velo, usager , puissmax_usager)
-                if type(progarthur[2] != str):
+                if type(progarthur != str):
                     grosgraphe[p][q] = progarthur[0] + usager * distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/progarthur[2]
     return (grosgraphe, tabstop)
                 
@@ -61,7 +61,7 @@ def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             if p!=q:
                 progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, stop(coor)[p][q]]], velo, usager , puissmax_usager)
-                if type(progarthur[2] != str):
+                if type(progarthur != str):
                     graphvit[p][q] = progarthur[2]
     return graphvit #graphvit est un graphe de point donnant la vitesse entre pointi et pointj si pointi et pointj sont adjacents
 
