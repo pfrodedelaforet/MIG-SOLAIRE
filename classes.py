@@ -37,7 +37,7 @@ class Triporteur:
     def convert(x,y,echelles):
         xmin,xmax,ymin,ymax,xt,yt = echelles
         return (x/(xmax-xmin)*xt,y/(ymax-ymin)*yt)
-    def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity):
+    def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity,echelles):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.charge = charge #flottant : charge du triporteur : en w.h
         self.pos = [elp.x,elp.y]
@@ -50,7 +50,7 @@ class Triporteur:
         self.puissance_moteur=puissance_moteur
         self.batterie_capacity=batterie_capacity
         self.time_to_be_fully_charged=(batterie_capacity-charge)/puissance_batterie
-        xy = convert(self.pos[0],self.pos[1],echelles)
+        xy = Triporteur.convert(self.pos[0],self.pos[1],echelles)
         self.dot = plt.scatter(xy[0],xy[1],s=100)
     def avancer(self,dist,t):
         if self.taille_arrete == -1 and self.liste_tournee != []:
