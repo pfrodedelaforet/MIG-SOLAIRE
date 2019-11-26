@@ -70,10 +70,10 @@ def init_carte():
     echelles = [xmin,xmax,ymin,ymax,len(tab),len(tab[0])]
     return echelles
 
-def actualiser_carte(liste_tripo): 
+def actualiser_carte(liste_tripo,echelles): 
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
-        elt.dot.set_offset(self.pos[0],self.pos[1])
+        elt.actualiser(self.pos[0],self.pos[1],echelles)
 
 def dicos():
     list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
@@ -120,7 +120,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
-            actualiser_carte(liste_tripo)
+            actualiser_carte(liste_tripo,echelles)
         time.sleep(t)
 nb_clients = 30
 elp = Point(43.707354, 7.282234)
