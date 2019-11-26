@@ -1,5 +1,32 @@
-def s(clients,graphe,i,j,elp): #C'est un Poids ,s permet l'optimisation des tournees c'est une matrice len(pts)² ,i et j sont des indices, clients une liste de DeliveryPoint
-    return(graphe[clients[i]][elp] + graphe[elp][clients[j]] - graphe[clients[i]][clients[j]])
+def s(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des tournees c'est une matrice len(pts)² ,i et j sont des indices, clients une liste de DeliveryPoint
+    return(dist(clients[i],elp) + dist(elp,clients[j]) - dist(clients[i],clients[j]))
+
+class Tournee:#C'est pour le programme de Jeremy    
+    def __init__(self,i0,elp,dist,clients):#i0 est un indice, elp un point et dist une fonction de la forme i -> j -> poids ou i et j sont des points, clients est une liste de DeliveryPoint
+        self.poids = Poids(dist(elp,clients[i0]) + dist(clients[i0],elp))
+        self.elp = elp
+        self.indices = [i0] #il est implicite qu'une tournee commence et finit par l'elp, il faut prendre cela en compte, les points sont un couple DeliveryPoint, heure d'arrivee presumee(en secondes, on suppose qu'on est a l'elp a t = 0)
+        self.temps = [dist(elp,clients[i0].duree]
+        self.clients = clients
+        self.dist = dist
+        self.masse = clients[i0].masse
+    
+    def __add__(self,other):#Pas du tout commutatif
+        tmp = tournee(self.indices[0],self.elp,self.dist,self.clients)
+        ttourn1 = self.temps[-1]
+        ot = other.temps.copy()
+        elp = self.elp
+        i = self.indices[-1]
+        ti = self.temps[-1]
+        j = other.indices[0]
+        clients = self.clients
+        for k in range(len(ot)): #il faut changer le moment de passage de la deuxieme tournee
+            ot[k] += dist(clients[i],clients[j]).duree + ti - dist(elp,clients[j]).duree
+            
+        tmp.temps = self.indices + ot
+        tmp.poids = self.poids + other.poids - s(self.clients,self.dist,self.indices[-1],other.indices[0])
+        tmp.masse = self.masse + other.masse
+        return(tmp)
         
 #optimisation en utilisant une methode de TSP        
 def cost_change(dst,pts, n1, n2, n3, n4):
@@ -11,8 +38,7 @@ def two_opt(dst,pts,route):
     while improved:
         improved = False
         for i in range(1, len(route) - 2):
-            for j in range(i + 1, len(route)):
-                if j - i == 1: continue
+            for j in range(i + 2, len(route)):
                 if cost_change(dst,pts, best[i - 1], best[i], best[j - 1], best[j]) < 0:
                     best[i:j] = best[j - 1:i - 1:-1]
                     improved = True
@@ -52,16 +78,16 @@ def merge(clients,i,j,sw,ew):#sw et ew sont des dictionnaires cles : indices ,va
 def req(triporteur,tourn):
     return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
 
-def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requierements = req,ponderation = lambda x: x.energie):
+def Clarke(triporteurs,dist,clients,elp,t0 = 0,requierements = req,ponderation = lambda x: x.energie):
     n = len(clients)
     tri0 = triporteurs[0]
-    gains = flatten([[((i,j),s(clients,graphe,i,j,elp)) for i in range(n) if i != j] for j in range(n)])
+    gains = flatten([[((i,j),s(clients,dist,i,j,elp)) for i in range(n) if i != j] for j in range(n)])
     gains.sort(key = ponderation,reverse = True)# Ce sont les gains potentiels, on adopte une strategie gloutonne en privilegiant les gains les plus gros.
     sw = {}
     ew = {}
     for i in range(n):
-        sw[i] = Tournee(clients,graphe,elp,i)
-        ew[i] = Tournee(clients,graphe,elp,i)
+        sw[i] = Tournee(clients,dist,elp,i)
+        ew[i] = Tournee(clients,dist,elp,i)
     while True:
         if len(gains) == 0:
             break
@@ -87,3 +113,33 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requierements = req,ponderation
             if tripo.tournee == []:
                 tripo.tournee = map(lambda x:clients[x],l[0][0])
                 del l[0]
+
+def cout(dst,tourn):
+    d = 0
+    for i in range(len(tourn) - 1):
+        d = d + dst(tourn[i],tourn[i+1]
+    return(d)
+
+def ajout(dst,tourn,dps):
+    route = [i for i in range(len(tourn)+2)]
+    nt = tourn + dps
+    ropt = two_opt(dst,nt,route)
+    return map(lambda x:tourn[x],ropt)
+                      
+def cout_ajout(dst,tour,dps):
+    return(cout(dst,ajout(dst,tour,dps)) - cout(dst,tour))
+
+def nouveau_segment(triporteurs,dp1,dp2,dst = lambda x:x.energie): #Cette fonction vise a rajouter un segment dans la tournee d'un triporteur existant : ()
+    cost = []
+    n = len(triporteurs)
+    for i in range(n):
+        tourn = triporteurs[i].tournee
+        cost.append(i,cout_ajout(dst,tourn,[dp1,dp2]))
+    (m,cm) = cost.min(key = lambda x:x[1])
+    triporteurs[m].tournee = ajout(dst,triporteurs[m].tournee,[dp1,dp2])
+
+def borne_tournee(dst,triporteur,bornes): #il y a tres peu de bornes
+    tourn = triporteur.tournee
+    cost = [(i,cout_ajout(dst,tourn,[bornes[i]])) for i in range(len(bornes))]
+    i,c = cost.min(key = lambda x:x[1])
+    return ajout(dst,tourn,bornes[i])
