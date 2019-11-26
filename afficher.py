@@ -58,9 +58,13 @@ def init_carte():
         return (Cluster,latmin,latmax,longmin,longmax)
 
 
-    lat = 43.69795
-    longi = 7.26763
-    a = getImageCluster(lat,longi, 0.00746,0.0251, 16)
+    lat = 43.6942
+    longi = 7.2652
+    delta_lat = 0.00746
+    delta_lon = 0.0149
+    zoom = 16
+
+    a = getImageCluster(lat,longi,delta_lat,delta_long,zoom)
     fig = plt.figure()
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])

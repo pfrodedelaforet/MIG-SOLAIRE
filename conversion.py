@@ -1,15 +1,14 @@
 from pyproj import Transformer
 import math
-transformer_to_lamb= Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
+transformer_to_lamb= Transformer.from_crs("EPSG:4326", "EPSG:2157", always_xy=True)
 
-lat = 43.69795
-longi = 7.26763
+lat = 43.6942
+longi = 7.2652
 
 delta_lat = 0.00746
-delta_lon = 0.0251
-
-x_0,y_0=transformer_to_lamb.transform(7.26528, 43.69422 )
-x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
+delta_lon = 0.0149
+x_0,y_0=transformer_to_lamb.transform(lon,lat)
+x_fin,y_fin=transformer_to_lamb.transform(lon + delta_lon,lat + delta_lat)
 
 #x_0,y_0=transformer_to_lamb.transform(
 #x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
