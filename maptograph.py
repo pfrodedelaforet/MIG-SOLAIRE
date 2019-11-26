@@ -14,7 +14,7 @@ transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=T
 transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
 def coor_point(coor):
-    return {Point(list(coor.keys())[i][0],list(coor.keys())[i][1]):{Point(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1]) for j in range(len(coor[list(coor.keys())[i]]))} for i in range(len(list(coor.keys()))) }
+    return {Point(list(coor.keys())[i][0],list(coor.keys())[i][1]):[Point(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1]) for j in range(len(coor[list(coor.keys())[i]]))] for i in range(len(list(coor.keys()))) }
 def distance_euc(point1, point2):
     return sqrt((point1.x-point2.x)**2+(point1.y-point2.y)**2)
 
