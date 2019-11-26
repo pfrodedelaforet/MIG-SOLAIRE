@@ -101,7 +101,7 @@ def path_clients(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 7
     for p in nodeslist+bornes+[elp]:
         M[p] = {}
         for q in nodeslist+bornes+[elp]:
-            M[p][q] = djikstra(grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0], p, q, [], coor_point[s], {}, p)[1]
+            M[p][q] = djikstra(grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0], p, q, [], coor_point[p], {}, p)[1]
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
 
 
@@ -140,7 +140,7 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
         for q in liste:
             ener = djikstra(grosgraphe[0], p, q, [], coor_points[p], {}, p)[0]
             if (p != q and ener != float("inf")):
-                sousgraphe[s][t] = Poids(ener, temps(coor_points, altitude, p, q, velo, usager, puissmax_usager),True)
+                sousgraphe[p][q] = Poids(ener, temps(coor_points, altitude, p, q, velo, usager, puissmax_usager),True)
                 
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
