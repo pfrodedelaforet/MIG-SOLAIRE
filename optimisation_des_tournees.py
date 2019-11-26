@@ -6,7 +6,7 @@ class Tournee:#C'est pour le programme de Jeremy
         self.poids = Poids(dist(elp,clients[i0]) + dist(clients[i0],elp))
         self.elp = elp
         self.indices = [i0] #il est implicite qu'une tournee commence et finit par l'elp, il faut prendre cela en compte, les points sont un couple DeliveryPoint, heure d'arrivee presumee(en secondes, on suppose qu'on est a l'elp a t = 0)
-        self.temps = [dist(elp,clients[i0].duree]
+        self.temps = [dist(elp,clients[i0]).duree]
         self.clients = clients
         self.dist = dist
         self.masse = clients[i0].masse
@@ -117,8 +117,8 @@ def Clarke(triporteurs,dist,clients,elp,t0 = 0,requierements = req,ponderation =
 def cout(dst,tourn):
     d = 0
     for i in range(len(tourn) - 1):
-        d = d + dst(tourn[i],tourn[i+1]
-    return(d)
+        d = d + dst(tourn[i],tourn[i+1])
+    return d
 
 def ajout(dst,tourn,dps):
     route = [i for i in range(len(tourn)+2)]

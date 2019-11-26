@@ -40,7 +40,7 @@ def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
         for j in range(len(coor[list(coor.keys())[i]])) :
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, tabstop[p][q]]], velo, usager , puissmax_usager)
-            grosgraphe[p][q] = progarthur[0] + puisempl * distance_euc(coor[i],coor[j])/progarthur[2]
+            grosgraphe[p][q] = progarthur[0] + usager * distance_euc(coor[i],coor[j])/progarthur[2]
     return (grosgraphe, tabstop)
                 
 def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
