@@ -9,11 +9,14 @@ import random
 from collections import defaultdict
 from  mig_algo_energie_final import *
 from classes import *
+from pyproj import Transformer
+transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 
 def distance_euc(L, N):
-
-    return sqrt((L[0]-N[0])**2+(L[1]-N[1])**2)
-
+    L_ = transformer_to_lamb.transform(L)
+    N_ = transformer_to_lamb.transform(N)
+    return sqrt((L_[0]-N_[0])**2+(L_[1]-N_[1])**2)
 
 def speed(piet, i, j):
     if piet[i][j] == 1:
@@ -40,7 +43,7 @@ def grosgraph(coor, altitude, velo, usager = 75, puissmax_usager = 250):
         for j in range(len(coor[list(coor.keys())[i]])) :
             q = Point(coor[list(coor.keys())[i]][j][0],coor[list(coor.keys())[i]][j][1])
             progarthur = calcul_energy([[distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j]), altitude[(list(coor.keys())[i][0], list(coor.keys())[i][1])], altitude[(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1])], vitesse, tabstop[p][q]]], velo, usager , puissmax_usager)
-            grosgraphe[p][q] = progarthur[0] + usager * distance_euc(coor[i],coor[j])/progarthur[2]
+            grosgraphe[p][q] = progarthur[0] + usager * distance_euc(list(coor.keys())[i],coor[list(coor.keys())[i]][j])/progarthur[2]
     return (grosgraphe, tabstop)
                 
 def graphvit(coor, altitude, velo, usager = 75, puissmax_usager = 250):
