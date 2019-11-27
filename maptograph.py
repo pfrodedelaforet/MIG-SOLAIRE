@@ -12,7 +12,7 @@ from classes import *
 from pyproj import Transformer
 transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
 transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
-
+import time
 def coor_point(coor):
     return {Point(list(coor.keys())[i][0],list(coor.keys())[i][1]):[Point(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1]) for j in range(len(coor[list(coor.keys())[i]]))] for i in range(len(list(coor.keys()))) }
 def distance_euc(point1, point2):
@@ -73,30 +73,50 @@ def recurs(graphe, x, M, s, t, P):
     if P[x] != s :
         M.append(P[x])
         return recurs(graphe, P[x], M, s, t, P)
-        
 
-def djikstra(graphe,etape,visites,dist,P,depart):
-    if len(visites) == len(list(graphe.keys())): 
-        D = {}
-        for fin in list(graph.keys()):
-            D[fin] = (dist[fin], recurs(graphe, fin, [], depart, fin, P))
-        return D
-    if len(visites) == 0:
-        dist[etape] = 0
-    for voisin in graphe[etape].keys():
-        if voisin not in visites:
-            if dist[voisin]>dist[etape] + graphe[etape][voisin]:
-                dist[voisin] = dist[etape]+graphe[etape][voisin]
-                P[voisin] = etape
-    visites.append(etape)
-    distance = float('inf')
-    for x in graphe.keys():
-        if x not in visites : 
-            if dist[x]<distance : 
-                x_min = x
-                distance = dist[x]
-    return djikstra(graphe, x_min, visites, dist, P, depart)
-    
+     
+def get_path_to(dist, node):
+    prev = dist[node][1]
+    path = [node]
+    while prev is not None:
+        path.insert(0, prev)
+        prev = dist[prev][1]
+    return path  
+def inserer(x, L, dist):#L est une liste déjà triée auparavant 
+    i = 0
+    for i in range(len(L)):
+        if dist[x][0]<dist[L[i]][0]:
+            L.insert(i, x)
+            return L
+def djikstra(graphe,depart):
+    visites = set()
+    nonvisites = set(graphe)
+    print(nonvisites)
+    dist = {k: (np.inf, None) for k in graphe}    
+    dist[depart] = (0, None)
+    etape = depart
+    t = time.time() ;
+    while len(nonvisites) > 0:
+        visites.add(etape)
+        nonvisites.remove(etape)
+        for voisin in graphe[etape].keys():
+            if voisin in nonvisites:
+                new_dist = dist[etape][0] + graphe[etape][voisin]
+                if dist[voisin][0]> new_dist:
+                    dist[voisin] = (new_dist, etape)
+        print(f"{time.time()-t}") 
+        distance = float('inf')
+        for x in nonvisites: 
+                if (float(dist[x][0]) != float('inf') and float(dist[x][0])<float(distance)) : 
+                    x_min = x
+                    distance = dist[x][0]
+        etape = x_min
+    print(f"{time.time()-t} je suis le deuxieme \n")
+    D = {}
+    for fin in graphe : 
+        D[fin] = (dist[fin][0], get_path_to(dist, fin))
+    return D
+      
     
 def argdjikstra(coor_points, depart, graphe):
     D={p:float("inf") for p in list(coor_points.keys())}
@@ -108,7 +128,7 @@ def path_clients(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 7
     M = defaultdict(dict)
     for p in nodeslist+bornes+[elp]:
         M[p] = {} ; grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
-        plus_court_p = djikstra(grosgraphe, p, [], argdjikstra(coor_points, p, grosgraphe), {}, p)
+        plus_court_p = djikstra(grosgraphe, p)
         for q in nodeslist+bornes+[elp]:
             M[p][q] = plus_court_p[q][1]
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
@@ -116,7 +136,7 @@ def path_clients(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 7
 
 def temps(coor_points, altitude, depart, arrivee, velo, usager = 75, puissmax_usager = 250):
     t = 0; grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
-    L = djikstra(grosgraphe, depart, [], argdjikstra(coor_points, p, grosgraphe), {}, depart)[arrivee][1] #on récup le path entre les deux points
+    L = djikstra(grosgraphe, depart)[arrivee][1] #on récup le path entre les deux points
     graphvitesse = graphvit(coor_points, velo, usager, puissmax_usager )
     for i in range(len(L)-1):
         t += distance_euc(L[i],L[i+1])/graphvitesse[L[i]][L[i+1]]
@@ -125,7 +145,7 @@ def temps(coor_points, altitude, depart, arrivee, velo, usager = 75, puissmax_us
 
 def trouvpoint(coor_points, altitude, depart, arrivee, tdepuisdep, velo, usager = 75, puissmax_usager = 250):
     i = 0 ; grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0]
-    L = djikstra(grosgraphe, depart, [], argdjikstra(coor_points, p, grosgraphe), {}, depart)[arrivee][1]
+    L = djikstra(grosgraphe, depart)[arrivee][1]
     while temps(coor_points, altitude, depart, L[i], velo, usager , puissmax_usager )< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
@@ -143,12 +163,11 @@ def approx(nodeslist, coor_points):
 
 def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):
     sousgraphe = defaultdict(dict)
-    liste = nodeslist + bornes + [elp]
-    liste = approx(liste, coor_points) #bien une liste de points
+    liste = approx(nodeslist + bornes + [elp], coor_points) #bien une liste de points
     grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0] ; i= 0
     for p in liste:
         sousgraphe[p] = {} 
-        ener_p = djikstra(grosgraphe, p, [], argdjikstra(coor_points, p, grosgraphe), {}, p)
+        ener_p = djikstra(grosgraphe, p)
         for q in liste:
             ener_pq = ener_p[q][0] ; i+=1 ; print(f"lalalalalallalalalalalalallalai={i}")
             if (p != q and ener != float("inf")):
