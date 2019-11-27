@@ -13,6 +13,7 @@ from pyproj import Transformer
 transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
 transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
 import time
+import networkx as nx
 def coor_point(coor):
     return {Point(list(coor.keys())[i][0],list(coor.keys())[i][1]):[Point(coor[list(coor.keys())[i]][j][0], coor[list(coor.keys())[i]][j][1]) for j in range(len(coor[list(coor.keys())[i]]))] for i in range(len(list(coor.keys()))) }
 def distance_euc(point1, point2):
@@ -87,7 +88,7 @@ def inserer(x, L, dist):#L est une liste déjà triée auparavant
         if dist[x][0]<dist[L[i]][0]:
             L.insert(i, x)
             return L
-def djikstra(graphe,depart):
+def djigstra(graphe,depart):
     visites = set()
     nonvisites = set(graphe)
     dist = {k: (np.inf, None) for k in graphe}    
@@ -107,14 +108,18 @@ def djikstra(graphe,depart):
             if (float(dist[x][0])<float(distance)) : 
                 x_min = x
                 distance = dist[x][0]
-        print(distance)
         etape = x_min
         nonvisites.remove(etape)
     D = {}
     for fin in graphe : 
         D[fin] = (dist[fin][0], get_path_to(dist, fin))
     return D
-      
+def djikstra(graphe, p):
+    G = nx.DiGraph()
+    for p in graphe:
+        G.add_node(p)
+        G.add_weighted_edges_from([(p,q,graphe[p][q]) for q in graphe[p]])
+    return (nx.shortest_path_length(G, p), nx.shortest_path(G, p))
     
 def argdjikstra(coor_points, depart, graphe):
     D={p:float("inf") for p in list(coor_points.keys())}
@@ -126,15 +131,15 @@ def path_clients(grosgraphe_0):#nodeslist et bornes sont des listes de point
     M = defaultdict(dict)
     for p in nodeslist+bornes+[elp]:
         M[p] = {}
-        plus_court_p = djikstra(grosgraphe_0, p)
+        plus_court_p = djikstra(grosgraphe_0, p)[1]
         for q in nodeslist+bornes+[elp]:
-            M[p][q] = plus_court_p[q][1]
+            M[p][q] = plus_court_p[q]
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
 
 
 def temps(grosgraphe_0, graphvitesse, depart, arrivee):
     t = 0
-    L = djikstra(grosgraphe_0, depart)[arrivee][1] #on récup le path entre les deux points
+    L = djikstra(grosgraphe_0, depart)[1][arrivee] #on récup le path entre les deux points
     for i in range(len(L)-1):
         t += distance_euc(L[i],L[i+1])/graphvitesse[L[i]][L[i+1]]
     return t 
@@ -142,7 +147,7 @@ def temps(grosgraphe_0, graphvitesse, depart, arrivee):
 
 def trouvpoint(grosgraphe_0, graphvitesse, depart, arrivee, tdepuisdep):
     i = 0
-    L = djikstra(grosgraphe_0, depart)[arrivee][1]
+    L = djikstra(grosgraphe_0, depart)[1][arrivee]
     while temps(grosgraphe_0, graphvitesse, depart, L[i] )< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
@@ -165,9 +170,9 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
     graphvitesse = graphvit(coor_points, altitude, velo, usager, puissmax_usager)
     for p in liste:
         sousgraphe[p] = {} 
-        ener_p = djikstra(grosgraphe, p)
+        ener_p =  djikstra(grosgraphe, p)[0]
         for q in liste:
-            ener_pq = ener_p[q][0] ; i+=1 ; print(f"lalalalalallalalalalalalallalai={i}")
+            ener_pq = ener_p[q] ; i+=1 ; print(f"lalalalalallalalalalalalallalai={i}")
             if (p != q and ener_pq != float("inf")):
                 sousgraphe[p][q] = Poids(ener_pq, temps(grosgraphe, graphvitesse, p, q),True)
                 
