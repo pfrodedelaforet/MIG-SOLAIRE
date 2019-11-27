@@ -140,7 +140,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
             actualiser_carte(liste_tripo,echelles)
         plt.pause(t)
     plt.pause(1)
-nb_clients = 30
+nb_clients = 5
 elp = Point(43.701760, 7.269595)
 #print(elp.x,elp.y)
 #print (conversion(43.701760, 7.269595))
