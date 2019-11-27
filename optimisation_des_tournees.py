@@ -54,6 +54,9 @@ def req(triporteur,tourn):
     return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
 
 def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requirements = req,ponderation = lambda x: x.energie):
+    for i in clients:
+        if i.masse == None:
+            print("OMG")
     def dist(a,b):
         return graphe[a][b]
     n = len(clients)
@@ -80,7 +83,7 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requirements = req,ponderation 
             
     l = []
     for i in sw.values():
-        l.append(two_opt(ponderation,clients,i.indices),i.poids)
+        l.append((two_opt(ponderation,clients,i.indices),i.poids))
         
     l.sort(key = lambda x:ponderation(x[1]),reverse = True)
     
@@ -88,8 +91,8 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requirements = req,ponderation 
         if len(l) == 0:
             break
         else:
-            if tripo.tournee == []:
-                tripo.tournee = map(lambda x:clients[x],l[0][0]).append(elp)
+            if tripo.liste_tournee == []:
+                tripo.liste_tournee = list(map(lambda x:clients[x],l[0][0])).append(elp)
                 del l[0]
 
 def cout(dst,tourn):
