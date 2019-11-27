@@ -59,12 +59,16 @@ class Triporteur:
         self.time_to_be_fully_charged=(batterie_capacity-charge)/puissance_batterie
         xy = Triporteur.convert(self.pos[0],self.pos[1],echelles)
         self.dot = plt.scatter(xy[0],xy[1],s=100)
+        self.taille_arrete = -1
+        self.last_dv_point = elp
+        self.prop_arrete
+        self.proptop = 0
     def avancer(self,dist,t):
         if self.taille_arrete == -1 and self.liste_tournee != []:
-            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]].enerige 
+            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]].duree 
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
         if proptot < 1:
-            self.prop_arrete = proptop
+            self.prop_arrete = proptot
             self.pos = [self.last_dv_point.x + (self.liste_tournee[0].x-self.last_dv_point.x)*self.prop_arrete,self.last_dv_point.y + (self.liste_tournee[0].y-self.last_dv_point.y)*self.prop_arrete]
         else:
             self.last_dv_point = self.liste_tournee[0]
