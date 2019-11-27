@@ -50,8 +50,8 @@ def merge(clients,i,j,sw,ew):#sw et ew sont des dictionnaires cles : indices ,va
     ew[ej] = ntourn
     sw[si] = ntourn
     
-def req(triporteur,tourn):
-    return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
+def req(triporteur,tourn,t0):
+    return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= t0 + tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
 
 def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,ponderation = lambda x: x.energie):
     for i in clients:
@@ -74,7 +74,7 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,pon
         (i,j),sij = gains[0]
         if i in ew and j in sw and j != ew[i].indices[0]:#si les tournees existent et sont differentes
             tfus = ew[i] + sw[j]
-            if requirements(tri0,tfus):
+            if requirements(tri0,tfus,t0):
                 merge(clients,i,j,sw,ew)
             else:
                 del gains[0]
