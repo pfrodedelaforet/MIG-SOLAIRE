@@ -138,16 +138,15 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     
     while 1:
         print("boucle")
-        Clarke(liste_tripo,dist,liste_clients,elp)
+        liste_clients = Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo,echelles)
         plt.pause(t)
-    plt.pause(1)
 nb_clients = 30
 elp = DeliveryPoint(43.701760, 7.269595)
 #print(elp.x,elp.y)
 #print (conversion(43.701760, 7.269595))
-boucle(5,1,nb_clients,1,100,1000,elp)
+boucle(1,10,nb_clients,0.1,100,1000,elp)
 

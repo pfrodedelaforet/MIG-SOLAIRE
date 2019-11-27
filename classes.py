@@ -62,8 +62,9 @@ class Triporteur:
         self.taille_arrete = -1
         self.last_dv_point = elp
         self.prop_arrete
-        self.proptop = 0
+        self.proptot = 0
     def avancer(self,dist,t):
+        print(self.liste_tournee)
         if self.taille_arrete == -1 and self.liste_tournee != []:
             self.taille_arrete = dist[self.last_dv_point][self.liste_tournee[0]].duree 
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
@@ -72,12 +73,13 @@ class Triporteur:
             self.pos = [self.last_dv_point.x + (self.liste_tournee[0].x-self.last_dv_point.x)*self.prop_arrete,self.last_dv_point.y + (self.liste_tournee[0].y-self.last_dv_point.y)*self.prop_arrete]
         else:
             self.last_dv_point = self.liste_tournee[0]
-            self.pos = [last_dv_point.x,last_dv_point.y]
-            del self.tournee[0]
-            reste = (proptop-1)*self.taille_arrete/self.vitesse
+            self.pos = [self.last_dv_point.x,self.last_dv_point.y]
+            del self.liste_tournee[0]
+            reste = (proptot-1)*self.taille_arrete/self.vitesse
             self.taille_arrete = -1
             self.prop_arrete = 0
-            self.avancer(dist,reste) 
+            if self.liste_tournee != []:
+                self.avancer(dist,reste) 
         
     def __repr__(self):
         str(self.capacity,self.dispo,self.position, self.charge)
