@@ -115,6 +115,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 
     bornes = []
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
+    liste_clients.append(elp)
 
     dico_points,altitude = dicos()
     """p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
