@@ -131,9 +131,9 @@ class Tournee:
         j = other.indices[0]
         clients = self.clients
         for k in range(len(ot)): #il faut changer le moment de passage de la deuxieme tournee
-            ot[k] += self.dist(clients[i],clients[j]).duree + ti - dist(elp,clients[j]).duree
+            ot[k] += self.dist(clients[i],clients[j]).duree + ti - self.dist(elp,clients[j]).duree
             
         tmp.temps = self.indices + ot
-        tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0])
+        tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0],elp)
         tmp.masse = self.masse + other.masse
         return(tmp)
