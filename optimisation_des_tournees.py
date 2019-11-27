@@ -6,7 +6,7 @@ class Tournee:#C'est pour le programme de Jeremy
         self.poids = Poids(dist(elp,clients[i0]) + dist(clients[i0],elp))
         self.elp = elp
         self.indices = [i0] #il est implicite qu'une tournee commence et finit par l'elp, il faut prendre cela en compte, les points sont un couple DeliveryPoint, heure d'arrivee presumee(en secondes, on suppose qu'on est a l'elp a t = 0)
-        self.temps = [dist(elp,clients[i0]).duree]
+        self.temps = [dist(elp,clients[i0].duree)]
         self.clients = clients
         self.dist = dist
         self.masse = clients[i0].masse
@@ -78,7 +78,9 @@ def merge(clients,i,j,sw,ew):#sw et ew sont des dictionnaires cles : indices ,va
 def req(triporteur,tourn):
     return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
 
-def Clarke(triporteurs,dist,clients,elp,t0 = 0,requierements = req,ponderation = lambda x: x.energie):
+def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requierements = req,ponderation = lambda x: x.energie):
+    def dist(a,b):
+        return graphe[a][b]
     n = len(clients)
     tri0 = triporteurs[0]
     gains = flatten([[((i,j),s(clients,dist,i,j,elp)) for i in range(n) if i != j] for j in range(n)])
@@ -111,23 +113,45 @@ def Clarke(triporteurs,dist,clients,elp,t0 = 0,requierements = req,ponderation =
             break
         else:
             if tripo.tournee == []:
-                tripo.tournee = map(lambda x:clients[x],l[0][0])
+                tripo.tournee = map(lambda x:clients[x],l[0][0]).append(elp)
                 del l[0]
 
 def cout(dst,tourn):
     d = 0
     for i in range(len(tourn) - 1):
         d = d + dst(tourn[i],tourn[i+1])
-    return d
+    return(d)
 
 def ajout(dst,tourn,dps):
-    route = [i for i in range(len(tourn)+2)]
-    nt = tourn + dps
+    n = len(tourn)
+    k = len(dps)
+    route = [i for i in range(n+k)]
+    nt = tourn[:n-1] + dps + [tourn[n-1]] #l'elp est a la fin
     ropt = two_opt(dst,nt,route)
-    return map(lambda x:tourn[x],ropt)
-                      
-def cout_ajout(dst,tour,dps):
-    return(cout(dst,ajout(dst,tour,dps)) - cout(dst,tour))
+    return map(lambda x:tourn[x] if x < n else dps[x],ropt)                      
+
+def ajout_indice(dst,tourn,dp):
+    n = len(tourn)
+    route = [i for i in range(n+1)]
+    nt = tourn[:n-1] + [dp] + [tourn[n-1]] #l'elp est a la fin
+    ropt = two_opt(dst,nt,route)
+    k = 0
+    for i in range(len(ropt)):
+        if ropt[i] == n:
+            return(i,map(lambda x:tourn[x] if x < n else dp))
+
+def ajout_segm(tourn,dp1,dp2,dst):
+    (idp1,to1) = ajout_indice(dst,tourn,dp1)
+    (idp2,to2) = ajout_indice(dst,tourn,dp2)
+    poss1 = to1[:idp1] + ajout(dst,to1[idp1:],dp2)
+    poss2 = ajout(dst,to2[:idp2 + 1],dp1) + to2[idp2 + 1:]
+    if cout(dst,poss1) < cout(dst,poss2):
+        return(poss1)
+    else:
+        return(poss2)
+
+def cout_ajout(dst,tour,dp1,dp2):
+    return(cout(dst,ajout_segm(tour,dp1,dp2,dst)) - cout(dst,tour))
 
 def nouveau_segment(triporteurs,dp1,dp2,dst = lambda x:x.energie): #Cette fonction vise a rajouter un segment dans la tournee d'un triporteur existant : ()
     cost = []
@@ -136,7 +160,7 @@ def nouveau_segment(triporteurs,dp1,dp2,dst = lambda x:x.energie): #Cette foncti
         tourn = triporteurs[i].tournee
         cost.append(i,cout_ajout(dst,tourn,[dp1,dp2]))
     (m,cm) = cost.min(key = lambda x:x[1])
-    triporteurs[m].tournee = ajout(dst,triporteurs[m].tournee,[dp1,dp2])
+    triporteurs[m].tournee = ajout_segm(triporteurs[m].tournee,dp1,dp2,dst)
 
 def borne_tournee(dst,triporteur,bornes): #il y a tres peu de bornes
     tourn = triporteur.tournee
