@@ -23,7 +23,7 @@ class Point :
         return hash(str(self))
 
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2,masse):
+    def __init__(self, lat, lon, t1 = None, t2= None ,masse = None):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2
@@ -33,6 +33,9 @@ class DeliveryPoint(Point):
     
     def __eq__(self, other):
         return ((self.latitude, self.longitude, self.t1, self.t2, self.masse)==(other.latitude, other.longitude, other.t1, oter.t2, other.masse))
+
+    def __hash__(self):
+        return hash(str(self))
 
 
 class Triporteur:
@@ -58,7 +61,7 @@ class Triporteur:
         self.dot = plt.scatter(xy[0],xy[1],s=100)
     def avancer(self,dist,t):
         if self.taille_arrete == -1 and self.liste_tournee != []:
-            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]] 
+            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]].enerige 
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
         if proptot < 1:
             self.prop_arrete = proptop

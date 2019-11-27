@@ -117,15 +117,18 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
 
     dico_points,altitude = dicos()
-    p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
+    """p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
     dist = defaultdict(dict)
-    for clee in p_dist:
-        for clee2 in clee:
-            dv_clee = Point(clee.x,clee.y)
-            dv_clee2 = Point(clee2.x,clee2.y)
-            dist[dv_clee][dv_clee2] = p_dist[clee,clee2]
-    
-
+    for client in liste_clients:
+        for client2 in liste_clients:
+            pkey = Point(client.latitude,client.longitude)
+            p2key = Point(client2.latitude,client2.longitude)
+            dist[client][client2] = p_dist[pkey,p2key]
+    """
+    dist = defaultdict(dict)
+    for elt in liste_clients:
+       for elt2 in liste_clients:
+           dist[elt][elt2] = Poids(0,10,0)
 
     echelles = init_carte()
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
@@ -133,7 +136,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     
     while 1:
         print("boucle")
-        #Clarke(liste_tripo,dist,liste_clients,elp)
+        Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
@@ -141,7 +144,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         plt.pause(t)
     plt.pause(1)
 nb_clients = 30
-elp = Point(43.701760, 7.269595)
+elp = DeliveryPoint(43.701760, 7.269595)
 #print(elp.x,elp.y)
 #print (conversion(43.701760, 7.269595))
 boucle(5,1,nb_clients,1,100,1000,elp)
