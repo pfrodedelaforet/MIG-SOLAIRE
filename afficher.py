@@ -1,4 +1,5 @@
 import time
+from collections import defaultdict
 from conversion import conversion
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,9 +42,9 @@ def init_carte():
     def getImageCluster(lat_deg, lon_deg, delta_lat,  delta_long, zoom):
         smurl = r"http://a.tile.openstreetmap.org/{0}/{1}/{2}.png"
         xmin, ymax = deg2num(lat_deg, lon_deg, zoom)
-        latmin,longmax = num2deg(xmin,ymax)
+        latmin,longmin = num2deg(xmin,ymax,zoom)
         xmax, ymin = deg2num(lat_deg + delta_lat, lon_deg + delta_long, zoom)
-        latmax,longmin = num2deg(xmax,ymin)
+        latmax,longmax = num2deg(xmax,ymin,zoom)
 
         Cluster = Image.new('RGB',((xmax-xmin+1)*256-1,(ymax-ymin+1)*256-1) ) 
         for xtile in range(xmin, xmax+1):
@@ -64,21 +65,23 @@ def init_carte():
     delta_lon = 0.0149
     zoom = 16
 
-    a = getImageCluster(lat,longi,delta_lat,delta_long,zoom)
+    a = getImageCluster(lat,longi,delta_lat,delta_lon,zoom)
     fig = plt.figure()
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])
     plt.imshow(tab)
-    xmin,ymax = conversion(a[1],a[4])
-    xmax, ymin = conversion(a[2],a[3])
+    xmin,ymax = conversion(a[1],a[3])
+    print(a[1],a[3])
+    print(xmin)
+    xmax, ymin = conversion(a[2],a[4])
     echelles = [xmin,xmax,ymin,ymax,len(tab),len(tab[0])]
     return echelles
 
 def actualiser_carte(liste_tripo,echelles): 
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
-        xy = Triporteur.convert(self.pos[0],self.pos[1],echelles)
-        elt.dot.set_offsets(xy[0],xy[1])
+        xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
+        elt.dot.set_offsets([xy[0],xy[1]])
 
 def dicos():
     list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
@@ -114,21 +117,32 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
 
     dico_points,altitude = dicos()
-    dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
+    p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
+    dist = defaultdict(dict)
+    for clee in p_dist:
+        for clee2 in clee:
+            dv_clee = Point(clee.x,clee.y)
+            dv_clee2 = Point(clee2.x,clee2.y)
+            dist[dv_clee][dv_clee2] = p_dist[clee,clee2]
+    
 
 
     echelles = init_carte()
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
+    liste_tripo[0].liste_tournee = liste_clients
+    
     while 1:
         print("boucle")
-        Clarke(liste_tripo,dist,liste_clients,elp)
+        #Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo,echelles)
-        time.sleep(t)
+        plt.pause(t)
+    plt.pause(1)
 nb_clients = 30
-elp = Point(43.707354, 7.282234)
+elp = Point(43.701760, 7.269595)
+#print(elp.x,elp.y)
+#print (conversion(43.701760, 7.269595))
 boucle(5,1,nb_clients,1,100,1000,elp)
-plt.show()
 

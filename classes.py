@@ -1,15 +1,17 @@
 from pyproj import Transformer
+import matplotlib.pyplot as plt
+from conversion import conversion
+
 
 
 
 class Point :
-    transformer_to_lamb = Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
-    transformer_to_lat_long = Transformer.from_crs( "EPSG:2154","EPSG:4326", always_xy=True)
     def __init__(self, lat, lon):
         self.latitude = lat
         self.longitude = lon
-        self.x = Point.transformer_to_lamb.transform(lat,lon)[0]
-        self.y = Point.transformer_to_lamb.transform(lat,lon)[1]
+        xy = conversion(lat,lon)
+        self.x = xy[0]
+        self.y = xy[1]
         #self.alti = cartalt[round((self.x-xo) / pas)][round((self.y-yo) / pas)]
     
     def __repr__(self) :
@@ -36,11 +38,13 @@ class DeliveryPoint(Point):
 class Triporteur:
     def convert(x,y,echelles):
         xmin,xmax,ymin,ymax,xt,yt = echelles
-        return (x/(xmax-xmin)*xt,y/(ymax-ymin)*yt)
-    def __init__(self, capacity, charge, elp, v,puissance_batterie,puissance_moteur,batterie_capacity,echelles):
+        #print(xmax,xmin)
+        return ((x-xmin)/(xmax-xmin)*xt,(y-ymin)/(ymax-ymin)*yt)
+    def __init__(self, capacity, charge, elp, v, echelles, puissance_batterie = 1000,puissance_moteur=1000,batterie_capacity=10000):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.charge = charge #flottant : charge du triporteur : en w.h
         self.pos = [elp.x,elp.y]
+        #print(self.pos)
         self.liste_tournee = [] #Liste de DeliveryPoint
         self.last_dv_point = elp #de type point : elp de départ du triporteur
         self.vitesse = v #en m/s 
