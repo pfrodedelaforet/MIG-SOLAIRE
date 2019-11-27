@@ -91,7 +91,7 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requirements = req,ponderation 
             break
         else:
             if tripo.liste_tournee == []:
-                l[0][0] = a_livrer
+                a_livrer = l[0][0]
                 for cli in a_livrer:
                     del clients[cli]
                 tourneedutripo = list(map(lambda x:clients[x],a_livrer))
