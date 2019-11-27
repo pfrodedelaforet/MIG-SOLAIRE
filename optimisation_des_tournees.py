@@ -68,6 +68,7 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requierements = req,ponderation
     while True:
         if len(gains) == 0:
             break
+        (i,j),sij = gains[0]
         if i in ew and j in sw and j != ew[i].indices[0]:#si les tournees existent et sont differentes
             tfus = ew[i] + sw[j]
             if requirements(tri0,tfus):
