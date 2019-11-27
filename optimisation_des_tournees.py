@@ -86,13 +86,15 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requirements = req,ponderation 
         l.append((two_opt(ponderation,clients,i.indices),i.poids))
         
     l.sort(key = lambda x:ponderation(x[1]),reverse = True)
-    
     for tripo in triporteurs:
         if len(l) == 0:
             break
         else:
             if tripo.liste_tournee == []:
-                tourneedutripo = list(map(lambda x:clients[x],l[0][0]))
+                l[0][0] = a_livrer
+                for cli in a_livrer:
+                    del clients[cli]
+                tourneedutripo = list(map(lambda x:clients[x],a_livrer))
                 tourneedutripo.append(elp)
                 tripo.liste_tournee = tourneedutripo
                 del l[0]
