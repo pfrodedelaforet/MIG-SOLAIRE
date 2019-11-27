@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from creer_liste_clients import creer_clients_csv
-from maptograph import graph, coor_point
+from maptograph import graph,coor_point
 from classes import *
 from pyproj import Transformer
 from optimisation_des_tournees import Clarke
