@@ -51,12 +51,9 @@ def merge(clients,i,j,sw,ew):#sw et ew sont des dictionnaires cles : indices ,va
     sw[si] = ntourn
     
 def req(triporteur,tourn,t0):
-    return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= t0 + tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
+    return(tourn.masse <= triporteur.capacity and all(list(map(lambda x: tourn.clients[x].t1 <= t0 + tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.indices))))) and (tourn.poids.energie <= triporteur.charge))
 
 def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,ponderation = lambda x: x.energie):
-    for i in clients:
-        if i.masse == None:
-            print("OMG")
     def dist(a,b):
         return graphe[a][b]
     n = len(clients)
@@ -83,8 +80,8 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,pon
             
     l = []
     for i in sw.values():
-        l.append((two_opt(ponderation,clients,i.indices),i.poids))
-        
+        l.append((two_opt(lambda x,y:ponderation(dist(x,y)),clients,i.indices),i.poids))
+    prevus = []    
     l.sort(key = lambda x:ponderation(x[1]),reverse = True)
     for tripo in triporteurs:
         if len(l) == 0:
@@ -92,13 +89,13 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,pon
         else:
             if tripo.liste_tournee == []:
                 a_livrer = l[0][0]
-                for cli in a_livrer:
-                    del clients[cli]
+                prevus = prevus + a_livrer
                 tourneedutripo = list(map(lambda x:clients[x],a_livrer))
                 tourneedutripo.append(elp)
                 tripo.liste_tournee = tourneedutripo
                 del l[0]
-
+    for i in prevus:
+        del clients[i]
 def cout(dst,tourn):
     d = 0
     for i in range(len(tourn) - 1):
