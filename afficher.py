@@ -115,7 +115,8 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 
     bornes = []
     liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
-    liste_clients.append(elp)
+    liste2 = liste_clients.copy()
+    liste2.append(elp)
 
     dico_points,altitude = dicos()
     """p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
@@ -127,8 +128,8 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
             dist[client][client2] = p_dist[pkey,p2key]
     """
     dist = defaultdict(dict)
-    for elt in liste_clients:
-       for elt2 in liste_clients:
+    for elt in liste2:
+        for elt2 in liste2:
            dist[elt][elt2] = Poids(0,10,0)
 
     echelles = init_carte()
