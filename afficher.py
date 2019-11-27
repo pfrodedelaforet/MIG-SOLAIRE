@@ -134,7 +134,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 
     echelles = init_carte()
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
-    liste_tripo[0].liste_tournee = liste_clients
+    #liste_tripo[0].liste_tournee = liste_clients
     
     while 1:
         print("boucle")

@@ -65,7 +65,7 @@ class Triporteur:
         self.proptop = 0
     def avancer(self,dist,t):
         if self.taille_arrete == -1 and self.liste_tournee != []:
-            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]].duree 
+            self.taille_arrete = dist[self.last_dv_point][self.liste_tournee[0]].duree 
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
         if proptot < 1:
             self.prop_arrete = proptot
