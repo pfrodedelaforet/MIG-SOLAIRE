@@ -53,7 +53,7 @@ def merge(clients,i,j,sw,ew):#sw et ew sont des dictionnaires cles : indices ,va
 def req(triporteur,tourn):
     return(tourn.masse <= triporteur.capacity and all(map(lambda x: tourn.clients[x].t1 <= tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.clients)))) and (tourn.poids.energie <= triporteur.charge))
 
-def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requierements = req,ponderation = lambda x: x.energie):
+def Clarke(triporteurs,graphe,clients,elp,t0 = 0,requirements = req,ponderation = lambda x: x.energie):
     def dist(a,b):
         return graphe[a][b]
     n = len(clients)
