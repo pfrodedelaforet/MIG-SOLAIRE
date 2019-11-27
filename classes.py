@@ -23,7 +23,7 @@ class Point :
         return hash(str(self))
 
 class DeliveryPoint(Point):
-    def __init__(self, lat, lon, t1, t2,masse):
+    def __init__(self, lat, lon, t1 = None, t2= None ,masse = None):
         Point.__init__(self, lat, lon)
         self.t1 = t1
         self.t2 = t2
@@ -33,6 +33,9 @@ class DeliveryPoint(Point):
     
     def __eq__(self, other):
         return ((self.latitude, self.longitude, self.t1, self.t2, self.masse)==(other.latitude, other.longitude, other.t1, oter.t2, other.masse))
+
+    def __hash__(self):
+        return hash(str(self))
 
 
 class Triporteur:
@@ -56,12 +59,16 @@ class Triporteur:
         self.time_to_be_fully_charged=(batterie_capacity-charge)/puissance_batterie
         xy = Triporteur.convert(self.pos[0],self.pos[1],echelles)
         self.dot = plt.scatter(xy[0],xy[1],s=100)
+        self.taille_arrete = -1
+        self.last_dv_point = elp
+        self.prop_arrete
+        self.proptop = 0
     def avancer(self,dist,t):
         if self.taille_arrete == -1 and self.liste_tournee != []:
-            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]] 
+            self.taille_arrete = dist[self.last_dv_point,self.liste_tournee[0]].duree 
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
         if proptot < 1:
-            self.prop_arrete = proptop
+            self.prop_arrete = proptot
             self.pos = [self.last_dv_point.x + (self.liste_tournee[0].x-self.last_dv_point.x)*self.prop_arrete,self.last_dv_point.y + (self.liste_tournee[0].y-self.last_dv_point.y)*self.prop_arrete]
         else:
             self.last_dv_point = self.liste_tournee[0]
@@ -115,7 +122,7 @@ class Tournee:
         self.masse = clients[i0].masse
     
     def __add__(self,other):#Pas du tout commutatif
-        tmp = tournee(self.indices[0],self.elp,self.dist,self.clients)
+        tmp = Tournee(self.indices[0],self.elp,self.dist,self.clients)
         ttourn1 = self.temps[-1]
         ot = other.temps.copy()
         elp = self.elp
@@ -124,9 +131,9 @@ class Tournee:
         j = other.indices[0]
         clients = self.clients
         for k in range(len(ot)): #il faut changer le moment de passage de la deuxieme tournee
-            ot[k] += dist(clients[i],clients[j]).duree + ti - dist(elp,clients[j]).duree
+            ot[k] += self.dist(clients[i],clients[j]).duree + ti - self.dist(elp,clients[j]).duree
             
         tmp.temps = self.indices + ot
-        tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0])
+        tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0],elp)
         tmp.masse = self.masse + other.masse
         return(tmp)
