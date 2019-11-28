@@ -163,7 +163,8 @@ def approx(nodeslist, coor_points):
             if distance_euc(c, nodeslist[i])<distmin:
                 distmin = distance_euc(c, nodeslist[i])
                 cmin = c
-        nodeslist[i] = cmin
+        nodeslist[i].latitude = cmin.latitude
+        nodeslist[i].longitude = cmin.longitude
     return nodeslist
 
 
