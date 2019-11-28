@@ -149,10 +149,10 @@ def temps(djikdep, p, q, altitude, velo, coor_points, usager = 75, puissmax_usag
 
 
 
-def trouvpoint(djikdep, depart, arrivee, tdepuisdep, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
+def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
     i = 0
-    L = djikdep[1][arrivee]
-    while temps(grosgraphe_0, depart, L[i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
+    L = djikstra(grosgraphe_0, depart)
+    while temps(L, depart, L[1][arrivee][i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
 
