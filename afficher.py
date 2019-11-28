@@ -1,4 +1,5 @@
 import time
+import shelve
 from collections import defaultdict
 from conversion import conversion,lon2x,lat2y,transfoinverse
 import numpy as np
@@ -142,15 +143,23 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         ax.scatter(xy[0],xy[1],marker = 's')
 
     dico_points,altitude = dicos()
-    #on adaapte liste2 aux points proches
+    """#on adaapte liste2 aux points proches
     pliste = [Point(elt.latitude,elt.longitude) for elt in liste2]
     pliste = approx(pliste,coor_point(dico_points))
+    g = coor_point(dico_points)
     for i in range(len(liste2)):
         liste2[i].latitude = pliste[i].latitude
         liste2[i].longitude = pliste[i].longitude
     #...
+    """
+
+    save = shelve.open('sauvegarde')
     p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,Velo(400))
-    print(p_dist)
+    save['pdist'] = p_dist
+    #print(p_dist)
+    elpa = elp
+    elp = liste2[len(liste2)-1]
+    print("elp : ", elpa," et ", elp)
     dist = defaultdict(dict)
     for client in liste2:
         for client2 in liste2:
@@ -158,6 +167,9 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
             p2key = Point(client2.latitude,client2.longitude)
             if pkey in p_dist and p2key in p_dist[pkey]:
                 dist[client][client2] = p_dist[pkey][p2key]
+    liste_client = liste2.copy()
+    elp = liste2[len(liste2)-1]
+    del liste_client[len(liste2)-1]
     print (dist)
     
     """dist = defaultdict(dict)
@@ -171,7 +183,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     #liste_tripo[0].liste_tournee = liste_clients
     
     while 1:
-        liste_clients = Clarke(liste_tripo,dist,liste_clients,elp)
+        liste_clients = Clarke(liste_tripo,dist,cwliste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
