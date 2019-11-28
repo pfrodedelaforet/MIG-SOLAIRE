@@ -1,6 +1,9 @@
 from classes import *
+import numpy as np
 
 def s(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des tournees c'est une matrice len(pts)² ,i et j sont des indices, clients une liste de DeliveryPoint
+    print(clients[i])
+    print(clients[j])
     return(dist(clients[i],elp) + dist(elp,clients[j]) - dist(clients[i],clients[j]))
 
 #optimisation en utilisant une methode de TSP        
@@ -53,24 +56,34 @@ def merge(clients,i,j,sw,ew):#sw et ew sont des dictionnaires cles : indices ,va
 def req(triporteur,tourn,t0):
     return(tourn.masse <= triporteur.capacity and all(list(map(lambda x: tourn.clients[x].t1 <= t0 + tourn.temps[x] <= tourn.clients[x].t2,range(len(tourn.indices))))) and (tourn.poids.energie <= triporteur.charge))
 
+from itertools import product
+
 def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,ponderation = lambda x: x.energie):
     def dist(a,b):
-        return graphe[a][b]
+        if a in graphe:
+            if b in graphe[a]:
+                return graphe[a][b]
+        else:
+            return Poids(np.inf,np.inf,False)
+        
     n = len(clients) + 1
     nlist = clients.copy()
     nlist.insert(0,elp)
     tri0 = triporteurs[0]
-    gains = flatten([[((i,j),s(clients,dist,i,j,elp)) for i in range(1,n-1) if i != j] for j in range(1,n-1)])
-    gains.sort(key = lambda x : ponderation(x[1]),reverse = True)# Ce sont les gains potentiels, on adopte une strategie gloutonne en privilegiant les gains les plus gros.
+    gains = [(i,j,s(clients,dist,i,j,elp)) for i, j in product(range(1,n-1), range(1,n-1)) if i != j]
+    gains.sort(key = lambda x : ponderation(x[2]),reverse = True)# Ce sont les gains potentiels, on adopte une strategie gloutonne en privilegiant les gains les plus gros.
     sw = {}
     ew = {}
     for i in range(1,n-1):
-        sw[i] = Tournee(i,elp,dist,clients)
-        ew[i] = Tournee(i,elp,dist,clients)
+        swi= Tournee(i,elp,dist,clients)
+        ewi = Tournee(i,elp,dist,clients)
+        if requirements(tri0,swi,t0):
+            sw[i] = swi
+            ew[i] = ewi
     while True:
         if len(gains) == 0:
             break
-        (i,j),sij = gains[0]
+        i,j,sij = gains[0]
         if i in ew and j in sw and j != ew[i].indices[0]:#si les tournees existent et sont differentes
             tfus = ew[i] + sw[j]
             if requirements(tri0,tfus,t0):
