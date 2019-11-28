@@ -97,6 +97,7 @@ def calcul_tot(chemin,Velo,usager,puiss_max_cycliste):#cf PMA: 250W chez les cyc
     powerlim=Velo.puiss_max+usager
     real_powerlim=Velo.puiss_max+puiss_max_cycliste
     for seg in res:
+        time_tot+=seg[2]
         energy_tot+=seg[0]
         if seg[1]>powerlim:
             if seg[1]>real_powerlim:
@@ -108,7 +109,7 @@ def calcul_tot(chemin,Velo,usager,puiss_max_cycliste):#cf PMA: 250W chez les cyc
     if time_overpowered>10:
         return ("trajet trop fatiguant")
     else:
-        return (energy_tot,max([res[i][1] for i in range (len(res))]),chemin[0][3])#renvoie la somme des énergies de chaque Segment et la vitesse
+        return (energy_tot,max([res[i][1] for i in range (len(res))]),chemin[0][3],res[0][2])#renvoie la somme des énergies de chaque Segment et la vitesse
 
 
 
