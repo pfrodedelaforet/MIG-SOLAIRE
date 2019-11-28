@@ -1,6 +1,5 @@
-from pyproj import Transformer
 import matplotlib.pyplot as plt
-from conversion import conversion
+from conversion import *
 
 
 
@@ -29,7 +28,7 @@ class DeliveryPoint(Point):
         self.t2 = t2
         self.masse = masse #masse du colis a livrer en kg
     def __repr__(self):
-        return (Point.__repr__(self)+f"il veut etre livre entre {self.t1} et {self.t2}")
+        return (Point.__repr__(self)+f", il veut etre livre entre {self.t1} et {self.t2}")
     
     def __eq__(self, other):
         return ((self.latitude, self.longitude, self.t1, self.t2, self.masse)==(other.latitude, other.longitude, other.t1, oter.t2, other.masse))
@@ -39,15 +38,15 @@ class DeliveryPoint(Point):
 
 
 class Triporteur:
-    def convert(x,y,echelles):
-        xmin,xmax,ymin,ymax,xt,yt = echelles
-        #print(xmax,xmin)
-        return ((x-xmin)/(xmax-xmin)*xt,(y-ymin)/(ymax-ymin)*yt)
+    def convert(latitude,longitude,echelles):
+        y,x = conversion_aff(latitude,longitude)
+        xmin,xmax,ymin,ymax = echelles
+        res = [x,y]
+        return res
     def __init__(self, capacity, charge, elp, v, echelles, puissance_batterie = 1000,puissance_moteur=1000,batterie_capacity=10000):
         self.capacity = capacity #flottant : poids qu'il peut porter
         self.charge = charge #flottant : charge du triporteur : en w.h
-        self.pos = [elp.x,elp.y]
-        #print(self.pos)
+        self.pos = [elp.latitude,elp.longitude]
         self.liste_tournee = [] #Liste de DeliveryPoint
         self.last_dv_point = elp #de type point : elp de départ du triporteur
         self.vitesse = v #en m/s 
@@ -64,16 +63,17 @@ class Triporteur:
         self.prop_arrete
         self.proptot = 0
     def avancer(self,dist,t):
-        print(self.liste_tournee)
+        #print(self.liste_tournee)
         if self.taille_arrete == -1 and self.liste_tournee != []:
             self.taille_arrete = dist[self.last_dv_point][self.liste_tournee[0]].duree 
+        #print("je vais vers : ",self.liste_tournee[0].latitude," , ",self.liste_tournee[0].longitude, "OR MORE LIKE ",self.liste_tournee[0].x," , ",self.liste_tournee[0].y)
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
         if proptot < 1:
             self.prop_arrete = proptot
-            self.pos = [self.last_dv_point.x + (self.liste_tournee[0].x-self.last_dv_point.x)*self.prop_arrete,self.last_dv_point.y + (self.liste_tournee[0].y-self.last_dv_point.y)*self.prop_arrete]
+            self.pos = [self.last_dv_point.latitude + (self.liste_tournee[0].latitude-self.last_dv_point.latitude)*self.prop_arrete,self.last_dv_point.longitude + (self.liste_tournee[0].longitude-self.last_dv_point.longitude)*self.prop_arrete]
         else:
             self.last_dv_point = self.liste_tournee[0]
-            self.pos = [self.last_dv_point.x,self.last_dv_point.y]
+            self.pos = [self.last_dv_point.latitude,self.last_dv_point.longitude]
             del self.liste_tournee[0]
             reste = (proptot-1)*self.taille_arrete/self.vitesse
             self.taille_arrete = -1
@@ -138,4 +138,4 @@ class Tournee:
         tmp.temps = self.indices + ot
         tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0],elp)
         tmp.masse = self.masse + other.masse
-        return(tmp)
+        return (tmp)
