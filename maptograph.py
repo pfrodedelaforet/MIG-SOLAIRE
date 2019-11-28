@@ -172,7 +172,7 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
         sousgraphe[p] = {} 
         ener_p =  djikstra(grosgraphe, p)[0]
         for q in liste:
-            ener_pq = ener_p[q] ; print(f"lalalalalallalalalalalalallala")
+            ener_pq = ener_p[q] 
             if (p != q and ener_pq != float("inf") and type(ener_pq) == float):
                 sousgraphe[p][q] = Poids(ener_pq, temps(grosgraphe, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)                
     return sousgraphe
