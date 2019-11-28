@@ -171,11 +171,12 @@ def approx(nodeslist, coor_points):
 def graph(coor_points, altitude, nodeslist, bornes, velo, usager = 75, puissmax_usager = 250):
     sousgraphe = defaultdict(dict)
     liste = nodeslist+bornes
-    liste = approx(nodeslist + bornes + [elp], coor_points) #bien une liste de points
+    liste = approx(nodeslist + bornes, coor_points) #bien une liste de points
+    liste_ = [Point(elt.latitude, elt.longitude) for elt in liste]
     grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0] ; i= 0
-    for p in liste:
+    for p in liste_:
         ener_p = djikstra(grosgraphe, p)
-        for q in liste:
+        for q in liste_:
             ener_pq = ener_p[0][q] 
             if (p != q and ener_pq != float("inf") and type(ener_pq) != float):
                 sousgraphe[p][q] = Poids(ener_pq, temps(ener_p, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)                
