@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from creer_liste_clients import creer_clients_csv
-from maptograph import graph,coor_point,trouvpoint,grosgraph
+from maptograph import graph,coor_point,trouvpoint,grosgraph,approx
 from classes import *
 from pyproj import Transformer
 from optimisation_des_tournees import Clarke
@@ -84,7 +84,7 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
     echelles = [xmin,xmax,ymin,ymax]
     return echelles,ax
 
-def actualiser_carte(liste_tripo,echellestrouver_point): 
+def actualiser_carte(liste_tripo,echelles,trouver_point): 
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
@@ -142,7 +142,14 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         ax.scatter(xy[0],xy[1],marker = 's')
 
     dico_points,altitude = dicos()
-    p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
+    #on adaapte liste2 aux points proches
+    pliste = [Point(elt.latitude,elt.longitude) for elt in liste2]
+    pliste = approx(pliste,coor_point(dico_points))
+    for i in range(len(liste2)):
+        liste2[i].latitude = pliste[i].latitude
+        liste2[i].longitude = pliste[i].longitude
+    #...
+    p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,Velo(400))
     print(p_dist)
     dist = defaultdict(dict)
     for client in liste2:
