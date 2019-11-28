@@ -2,8 +2,8 @@ from classes import *
 import numpy as np
 
 def s(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des tournees c'est une matrice len(pts)² ,i et j sont des indices, clients une liste de DeliveryPoint
-    print(clients[i])
-    print(clients[j])
+    #print(clients[i])
+    #print(clients[j])
     return(dist(clients[i],elp) + dist(elp,clients[j]) - dist(clients[i],clients[j]))
 
 #optimisation en utilisant une methode de TSP        

@@ -154,12 +154,14 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     """
 
     save = shelve.open('sauvegarde')
+    p_dist = save['pdist']
     p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,Velo(400))
     save['pdist'] = p_dist
+    save['liste2'] = liste2
     #print(p_dist)
     elpa = elp
     elp = liste2[len(liste2)-1]
-    print("elp : ", elpa," et ", elp)
+    #print("elp : ", elpa," et ", elp)
     dist = defaultdict(dict)
     for client in liste2:
         for client2 in liste2:
@@ -170,7 +172,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     liste_client = liste2.copy()
     elp = liste2[len(liste2)-1]
     del liste_client[len(liste2)-1]
-    print (dist)
+    print ("dist : ",dist)
     
     """dist = defaultdict(dict)
     for elt in liste2:
@@ -183,7 +185,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     #liste_tripo[0].liste_tournee = liste_clients
     
     while 1:
-        liste_clients = Clarke(liste_tripo,dist,cwliste_clients,elp)
+        liste_clients = Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
@@ -191,5 +193,5 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         plt.pause(t)
 nb_clients = 5
 elp = DeliveryPoint(43.701760, 7.269595)
-boucle(5,10,nb_clients,0.01,100,1000,elp)
+boucle(20,10,nb_clients,0.01,100,1000,elp)
 
