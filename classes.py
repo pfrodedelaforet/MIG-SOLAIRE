@@ -60,15 +60,14 @@ class Triporteur:
         self.dot = plt.scatter(xy[0],xy[1],s=100)
         self.taille_arrete = -1
         self.last_dv_point = elp
-        self.prop_arrete
-        self.proptot = 0
+        self.prop_arrete = 0
     def avancer(self,dist,t):
         #print(self.liste_tournee)
         if self.taille_arrete == -1 and self.liste_tournee != []:
-            self.taille_arrete = dist[self.last_dv_point][self.liste_tournee[0]].duree 
+            self.taille_arrete = dist[self.last_dv_point][self.liste_tournee[0]].energie 
         #print("je vais vers : ",self.liste_tournee[0].latitude," , ",self.liste_tournee[0].longitude, "OR MORE LIKE ",self.liste_tournee[0].x," , ",self.liste_tournee[0].y)
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
-        if proptot < 1:
+        if proptot < 1 and self.taille_arrete not in (float("inf"),0) :
             self.prop_arrete = proptot
             self.pos = [self.last_dv_point.latitude + (self.liste_tournee[0].latitude-self.last_dv_point.latitude)*self.prop_arrete,self.last_dv_point.longitude + (self.liste_tournee[0].longitude-self.last_dv_point.longitude)*self.prop_arrete]
         else:
@@ -108,6 +107,9 @@ class Poids:
     
     def __sub__(self,other):
         return Poids(self.energie-other.energie,self.duree - other.duree, self.faisable)
+
+    def __repr__(self):
+        return (f"{self.energie} et {self.duree} et {self.faisable}")
 
 #C'est pour le programme de Jeremy    
 def _tourns(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des tournees c'est une matrice len(pts)² ,i et j sont des indices, clients une liste de DeliveryPoint

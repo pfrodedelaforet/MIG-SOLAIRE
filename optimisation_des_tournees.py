@@ -60,12 +60,10 @@ from itertools import product
 
 def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,ponderation = lambda x: x.energie):
     def dist(a,b):
-        if a in graphe:
-            if b in graphe[a]:
-                return graphe[a][b]
-        else:
-            return Poids(np.inf,np.inf,False)
-        
+        try:
+            return graphe[a][b]
+        except:
+            print(a,b,'\n')
     n = len(clients) + 1
     nlist = clients.copy()
     nlist.insert(0,elp)

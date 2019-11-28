@@ -90,7 +90,7 @@ def actualiser_carte(liste_tripo,echelles,trouver_point):
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
         if elt.liste_tournee != []:
-            xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.proptot) 
+            xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
             latlon = transfoinverse(xy_lamb[0],xy_lamb[1])
             xy = Triporteur.convert(latlon[0],latlon[1],echelles)
         elt.dot.set_offsets([xy[0],xy[1]])
@@ -125,7 +125,10 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
        clients : liste d'objets de classe delivery_point
        dist : dist[i][j] renvoit la distance entre i et j"""
 
-    liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
+    save = shelve.open('sauvegarde')
+    #liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
+    #save['liste_clients'] = liste_clients
+    liste_clients = save['liste_clients']
     liste2 = liste_clients.copy()
     liste2.append(elp)
     liste_lat = [elt.latitude for elt in liste2]
@@ -137,10 +140,6 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     echelles,ax = init_carte(min_lat,min_lon,max_lat,max_lon)
     bornes = []
     xy = Triporteur.convert(elp.latitude,elp.longitude,echelles)
-    ax.scatter(xy[0],xy[1],s = 100,marker = "X")
-    for elt in liste_clients:
-        xy = Triporteur.convert(elt.latitude,elt.longitude,echelles)
-        ax.scatter(xy[0],xy[1],marker = 's')
 
     dico_points,altitude = dicos()
     """#on adaapte liste2 aux points proches
@@ -153,26 +152,32 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     #...
     """
 
-    save = shelve.open('sauvegarde')
     p_dist = save['pdist']
-    p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,Velo(400))
-    save['pdist'] = p_dist
-    save['liste2'] = liste2
+    #p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,Velo(400))
+    #save['pdist'] = p_dist
+    liste2 = save['liste2']
+    #save['liste2'] = liste2
     #print(p_dist)
     elpa = elp
     elp = liste2[len(liste2)-1]
     #print("elp : ", elpa," et ", elp)
+    for elt in liste_clients:
+        xy = Triporteur.convert(elt.latitude,elt.longitude,echelles)
+        ax.scatter(xy[0],xy[1],marker = 's',s = 30,c = "red")
+
+    xy = Triporteur.convert(elp.latitude,elp.longitude,echelles)
+    ax.scatter(xy[0],xy[1],s = 110 ,marker = "X")
     dist = defaultdict(dict)
     for client in liste2:
         for client2 in liste2:
             pkey = Point(client.latitude,client.longitude)
             p2key = Point(client2.latitude,client2.longitude)
-            if pkey in p_dist and p2key in p_dist[pkey]:
-                dist[client][client2] = p_dist[pkey][p2key]
+            dist[client][client2] = p_dist[pkey][p2key]
     liste_client = liste2.copy()
     elp = liste2[len(liste2)-1]
     del liste_client[len(liste2)-1]
-    print ("dist : ",dist)
+    #print ("dist : ",dist)
+    #print("liste ; ",liste_client)
     
     """dist = defaultdict(dict)
     for elt in liste2:
@@ -180,18 +185,19 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
            dist[elt][elt2] = Poids(100,10,True)
 """
     def trouver_point(depart,arrivee,prop):
-        return trouver_point(grosgraph(coor_points,altitude,Velo(400)),depart,arrivee,temps,altitude,Velo(400),coor_points(dico_points))
+        temps = prop*dist[depart][arrivee].duree
+        return trouvpoint(grosgraph(coor_point(dico_points),altitude,Velo(400)),depart,arrivee,temps,altitude,Velo(400),coor_point(dico_points))
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     #liste_tripo[0].liste_tournee = liste_clients
     
     while 1:
-        liste_clients = Clarke(liste_tripo,dist,liste_clients,elp)
+        liste_client = Clarke(liste_tripo,dist,liste_client,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo,echelles,trouver_point)
         plt.pause(t)
-nb_clients = 5
+nb_clients = 7
 elp = DeliveryPoint(43.701760, 7.269595)
-boucle(20,10,nb_clients,0.01,100,1000,elp)
+boucle(3,100,nb_clients,0.01,10,100,elp)
 
