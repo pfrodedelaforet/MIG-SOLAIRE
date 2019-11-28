@@ -139,8 +139,11 @@ def temps(grosgraphe_0, p, q, altitude, velo, coor_points, usager = 75, puissmax
     tabstop = stop(coor_points)
     for i in range(len(L)-1):
         deltat = calcul_energy([[distance_euc(L[i], L[i+1]), altitude[(L[i].latitude, L[i].longitude)], altitude[(L[i+1].latitude, L[i+1].longitude)], vitesse, tabstop[L[i]][L[i+1]]]], velo, usager, puissmax_usager)[3]
+        if deltat == 'i':
+            t = float('inf')
+            return t 
         print(deltat)
-        t += deltat
+        t += float(deltat)
     return t 
 
 
@@ -172,7 +175,7 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
         ener_p =  djikstra(grosgraphe, p)[0]
         for q in liste:
             ener_pq = ener_p[q] 
-            if (p != q and ener_pq != float("inf") and type(ener_pq) == float):
+            if (p != q and ener_pq != float("inf") and type(ener_pq) != float):
                 sousgraphe[p][q] = Poids(ener_pq, temps(grosgraphe, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)                
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
