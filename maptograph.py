@@ -133,9 +133,9 @@ def path_clients(grosgraphe_0):#nodeslist et bornes sont des listes de point
 
 
 
-def temps(grosgraphe_0, p, q, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
+def temps(djikdep, p, q, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
     t = 0.0
-    L = djikstra(grosgraphe_0, p)[1][q] #on récup le path entre les deux points
+    L = djikdep[1][q] #on récup le path entre les deux points
     tabstop = stop(coor_points)
     for i in range(len(L)-1):
         deltat = calcul_energy([[distance_euc(L[i], L[i+1]), altitude[(L[i].latitude, L[i].longitude)], altitude[(L[i+1].latitude, L[i+1].longitude)], vitesse, tabstop[L[i]][L[i+1]]]], velo, usager, puissmax_usager)[3]
@@ -149,10 +149,10 @@ def temps(grosgraphe_0, p, q, altitude, velo, coor_points, usager = 75, puissmax
 
 
 
-def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
+def trouvpoint(djikdep, depart, arrivee, tdepuisdep, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
     i = 0
-    L = djikstra(grosgraphe_0, depart)[1][arrivee]
-    while temps(grosgraphe_0, depart, L[i], altitude, velo, coor_points, usager, puissmax_usager, )< tdepuisdep : 
+    L = djikdep[1][arrivee]
+    while temps(grosgraphe_0, depart, L[i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
 
@@ -172,10 +172,10 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
     liste = approx(nodeslist + bornes + [elp], coor_points) #bien une liste de points
     grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0] ; i= 0
     for p in liste:
-        ener_p =  djikstra(grosgraphe, p)[0]
+        ener_p =  djikstra(grosgraphe, p)
         for q in liste:
-            ener_pq = ener_p[q] 
+            ener_pq = ener_p[0][q] 
             if (p != q and ener_pq != float("inf") and type(ener_pq) != float):
-                sousgraphe[p][q] = Poids(ener_pq, temps(grosgraphe, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)                
+                sousgraphe[p][q] = Poids(ener_pq, temps(ener_p, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)                
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
