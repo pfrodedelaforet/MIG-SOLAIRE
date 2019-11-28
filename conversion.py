@@ -2,6 +2,7 @@ from pyproj import Transformer
 import math
 transformer_to_lamb_aff= Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
 transformer_to_lamb= Transformer.from_crs("EPSG:4326", "EPSG:2154", always_xy=True)
+transfo_inv = Transformer.from_crs("EPSG:2154", "EPSG:4326", always_xy=True)
 
 
 lat = 43.6942
@@ -14,6 +15,9 @@ x_fin,y_fin=transformer_to_lamb.transform(longi + delta_lon,lat + delta_lat)
 
 #x_0,y_0=transformer_to_lamb.transform(
 #x_fin,y_fin=transformer_to_lamb.transform(7.28018,43.70168)
+def transfoinverse(x,y):
+    lon,lat = transfo_inv.transform(y,x)
+    return lat,lon
 
 def conversion(lati,longi):
     x_lamb,y_lamb=transformer_to_lamb.transform(longi,lati)
@@ -42,3 +46,5 @@ def lat2y(a):
   return math.log(r)*6378137
 def lon2x(a):
     return math.radians(a)*6378137.0
+
+#print(transfoinverse(conversion(lat,longi)[0],conversion(lat,longi)[1]))
