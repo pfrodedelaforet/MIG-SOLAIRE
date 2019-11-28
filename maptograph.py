@@ -46,7 +46,7 @@ def grosgraph(coor_points, altitude, velo, usager = 75, puissmax_usager = 250):
             if p != q: 
                 progarthur = calcul_energy([[distance_euc(p, q), altitude[(p.latitude, p.longitude)], altitude[(p.latitude, p.longitude)], vitesse, tabstop[p][q]]], velo, usager , puissmax_usager)
                 if type(progarthur) != str:
-                    grosgraphe[p][q] = progarthur[0] + usager * distance_euc(p,q)/progarthur[2]*2
+                    grosgraphe[p][q] = progarthur[0] + usager * progarthur[3]*2
                 else : 
                     grosgraphe[p][q] = float("inf")
     return (grosgraphe, tabstop)
@@ -65,16 +65,10 @@ def graphvit(coor_points, altitude, velo, usager = 75, puissmax_usager = 250):
     return graphvit #graphvit est un graphe de point donnant la vitesse entre pointi et pointj si pointi et pointj sont adjacents
 
 
-def recurs(graphe, x, M, s, t, P):
-    if P[x] == s:
-        M.append(s)
-        M.reverse()
-        return M
-    if P[x] != s :
-        M.append(P[x])
-        return recurs(graphe, P[x], M, s, t, P)
 
-     
+
+
+
 def get_path_to(dist, node):
     prev = dist[node][1]
     path = [node]
@@ -114,6 +108,8 @@ def djigstra(graphe,depart):
     for fin in graphe : 
         D[fin] = (dist[fin][0], get_path_to(dist, fin))
     return D
+
+
 def djikstra(graphe, p):
     G = nx.DiGraph()
     for p in graphe:
@@ -121,11 +117,7 @@ def djikstra(graphe, p):
         G.add_weighted_edges_from([(p,q,graphe[p][q]) for q in graphe[p]])
     return (nx.shortest_path_length(G, p), nx.shortest_path(G, p))
     
-def argdjikstra(coor_points, depart, graphe):
-    D={p:float("inf") for p in list(coor_points.keys())}
-    for s in coor_points[depart]:
-        D[s] = graphe[depart][s]
-    return D
+
 
 def path_clients(grosgraphe_0):#nodeslist et bornes sont des listes de point
     M = defaultdict(dict)
@@ -182,7 +174,6 @@ def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puis
         for q in liste:
             ener_pq = ener_p[q] ; print(f"lalalalalallalalalalalalallala")
             if (p != q and ener_pq != float("inf") and type(ener_pq) == float):
-                sousgraphe[p][q] = Poids(ener_pq, temps(grosgraphe, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)
-                
+                sousgraphe[p][q] = Poids(ener_pq, temps(grosgraphe, p, q, altitude, velo,  coor_points,usager, puissmax_usager),True)                
     return sousgraphe
 #attention les bornes et les points de livraison sont seulement des points ici, pour les différencier il faut avoir la liste des bornes                                 
