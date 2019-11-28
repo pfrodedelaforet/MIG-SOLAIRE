@@ -95,12 +95,21 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,pon
             if tripo.liste_tournee == []:
                 a_livrer = l[0][0]
                 del a_livrer[0]
+                del a_livrer[len(a_livrer)-1]
                 prevus = prevus + a_livrer
                 tourneedutripo = list(map(lambda x:nlist[x],a_livrer))
+                tourneedutripo.append(elp)
                 tripo.liste_tournee = tourneedutripo
                 del l[0]
-    for i in prevus:
-        del clients[i]
+    def set_diff(l1,l2):
+        nl = []
+        for i in l1:
+            if not (i in l2):
+                nl.append(i)
+        return(nl)
+    clients_indices = set_diff([i for i in range(len(clients))],prevus)
+    clients = [clients[i] for i in clients_indices]
+    return clients
 def cout(dst,tourn):
     d = 0
     for i in range(len(tourn) - 1):
