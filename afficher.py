@@ -138,19 +138,19 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         ax.scatter(xy[0],xy[1],marker = 's')
 
     dico_points,altitude = dicos()
-    p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
+    p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,elp,Velo(400))
     dist = defaultdict(dict)
-    for client in liste_clients:
-        for client2 in liste_clients:
+    for client in liste2:
+        for client2 in liste2:
             pkey = Point(client.latitude,client.longitude)
             p2key = Point(client2.latitude,client2.longitude)
             dist[client][client2] = p_dist[pkey,p2key]
     
-    dist = defaultdict(dict)
+    """dist = defaultdict(dict)
     for elt in liste2:
         for elt2 in liste2:
            dist[elt][elt2] = Poids(100,10,True)
-
+"""
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     #liste_tripo[0].liste_tournee = liste_clients
     
@@ -161,7 +161,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
                 elt.avancer(dist,t)
             actualiser_carte(liste_tripo,echelles)
         plt.pause(t)
-nb_clients = 30
+nb_clients = 5
 elp = DeliveryPoint(43.701760, 7.269595)
 boucle(5,10,nb_clients,0.01,100,1000,elp)
 
