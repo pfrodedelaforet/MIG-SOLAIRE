@@ -138,7 +138,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     
     while 1:
         print("boucle")
-        liste_clients = Clarke(liste_tripo,dist,liste_clients,elp)
+        Clarke(liste_tripo,dist,liste_clients,elp)
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
