@@ -4,8 +4,9 @@ def s(clients,dist,i,j,elp): #C'est un Poids ,s permet l'optimisation des tourne
     return(dist(clients[i],elp) + dist(elp,clients[j]) - dist(clients[i],clients[j]))
 
 #optimisation en utilisant une methode de TSP        
-def cost_change(dst,pts, n1, n2, n3, n4):
-    return dst(pts[n1],pts[n3]) + dst(pts[n2],pts[n4]) - dst(pts[n1],pts[n2]) - dst(pts[n3],pts[n4])
+def cost_change(dst,pts,route, i,j):
+    return dst(pts[route[i-1]],pts[route[j]]) + dst(pts[route[i]],pts[route[j+1]]) - (dst(pts[route[i-1]],pts[route[i]]) + dst(pts[route[j]],pts[route[j+1]]))
+
 
 def two_opt(dst,pts,route):
     best = route
@@ -13,12 +14,11 @@ def two_opt(dst,pts,route):
     while improved:
         improved = False
         for i in range(1, len(route) - 2):
-            for j in range(i + 2, len(route)):
-                if cost_change(dst,pts, best[i - 1], best[i], best[j - 1], best[j]) < 0:
-                    best[i:j] = best[j - 1:i - 1:-1]
+            for j in range(i + 1, len(route)-1):
+                if cost_change(dst,pts,best, i, j) < 0:
+                    best[i:j+1] = best[j:i - 1:-1]
                     improved = True
         route = best
-    return best
 #fin TSP
 
 def separer(dst,elps,clients): #Sorte de Voronoi en n²
@@ -56,13 +56,15 @@ def req(triporteur,tourn,t0):
 def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,ponderation = lambda x: x.energie):
     def dist(a,b):
         return graphe[a][b]
-    n = len(clients)
+    n = len(clients) + 1
+    nlist = clients.copy()
+    nlist.insert(0,elp)
     tri0 = triporteurs[0]
-    gains = flatten([[((i,j),s(clients,dist,i,j,elp)) for i in range(n) if i != j] for j in range(n)])
+    gains = flatten([[((i,j),s(clients,dist,i,j,elp)) for i in range(1,n-1) if i != j] for j in range(1,n-1)])
     gains.sort(key = lambda x : ponderation(x[1]),reverse = True)# Ce sont les gains potentiels, on adopte une strategie gloutonne en privilegiant les gains les plus gros.
     sw = {}
     ew = {}
-    for i in range(n):
+    for i in range(1,n-1):
         sw[i] = Tournee(i,elp,dist,clients)
         ew[i] = Tournee(i,elp,dist,clients)
     while True:
@@ -80,7 +82,10 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,pon
             
     l = []
     for i in sw.values():
-        l.append((two_opt(lambda x,y:ponderation(dist(x,y)),clients,i.indices),i.poids))
+        i.indices.append(0)
+        i.indices.insert(0,0)
+        two_opt(lambda x,y:ponderation(dist(x,y)),nlist,i.indices)
+        l.append((i.indices,i.poids))
     prevus = []    
     l.sort(key = lambda x:ponderation(x[1]),reverse = True)
     for tripo in triporteurs:
@@ -89,13 +94,22 @@ def Clarke(triporteurs,graphe,clients,elp,t0 = 8*3600 + 1,requirements = req,pon
         else:
             if tripo.liste_tournee == []:
                 a_livrer = l[0][0]
+                del a_livrer[0]
+                del a_livrer[len(a_livrer)-1]
                 prevus = prevus + a_livrer
-                tourneedutripo = list(map(lambda x:clients[x],a_livrer))
+                tourneedutripo = list(map(lambda x:nlist[x],a_livrer))
                 tourneedutripo.append(elp)
                 tripo.liste_tournee = tourneedutripo
                 del l[0]
-    for i in prevus:
-        del clients[i]
+    def set_diff(l1,l2):
+        nl = []
+        for i in l1:
+            if not (i in l2):
+                nl.append(i)
+        return(nl)
+    clients_indices = set_diff([i for i in range(len(clients))],prevus)
+    clients = [clients[i] for i in clients_indices]
+    return clients
 def cout(dst,tourn):
     d = 0
     for i in range(len(tourn) - 1):
