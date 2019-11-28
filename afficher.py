@@ -1,11 +1,11 @@
 import time
 from collections import defaultdict
-from conversion import conversion,lon2x,lat2y
+from conversion import conversion,lon2x,lat2y,transfoinverse
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 from creer_liste_clients import creer_clients_csv
-from maptograph import graph,coor_point
+from maptograph import graph,coor_point,trouvpoint,grosgraph
 from classes import *
 from pyproj import Transformer
 from optimisation_des_tournees import Clarke
@@ -84,10 +84,14 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
     echelles = [xmin,xmax,ymin,ymax]
     return echelles,ax
 
-def actualiser_carte(liste_tripo,echelles): 
+def actualiser_carte(liste_tripo,echellestrouver_point): 
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
+        if elt.liste_tournee != []:
+            xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.proptot) 
+            latlon = transfoinverse(xy_lamb[0],xy_lamb[1])
+            xy = Triporteur.convert(latlon[0],latlon[1],echelles)
         elt.dot.set_offsets([xy[0],xy[1]])
 
 def dicos():
@@ -145,13 +149,17 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         for client2 in liste2:
             pkey = Point(client.latitude,client.longitude)
             p2key = Point(client2.latitude,client2.longitude)
-            dist[client][client2] = p_dist[pkey][p2key]
+            if pkey in p_dist and p2key in p_dist[pkey]:
+                dist[client][client2] = p_dist[pkey][p2key]
+    print (dist)
     
     """dist = defaultdict(dict)
     for elt in liste2:
         for elt2 in liste2:
            dist[elt][elt2] = Poids(100,10,True)
 """
+    def trouver_point(depart,arrivee,prop):
+        return trouver_point(grosgraph(coor_points,altitude,Velo(400)),depart,arrivee,temps,altitude,Velo(400),coor_points(dico_points))
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     #liste_tripo[0].liste_tournee = liste_clients
     
@@ -160,7 +168,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
-            actualiser_carte(liste_tripo,echelles)
+            actualiser_carte(liste_tripo,echelles,trouver_point)
         plt.pause(t)
 nb_clients = 5
 elp = DeliveryPoint(43.701760, 7.269595)
