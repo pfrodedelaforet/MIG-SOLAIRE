@@ -163,14 +163,15 @@ def approx(nodeslist, coor_points):
             if distance_euc(c, nodeslist[i])<distmin:
                 distmin = distance_euc(c, nodeslist[i])
                 cmin = c
-        nodeslist[i] = cmin
+        nodeslist[i].latitude = cmin.latitude
+        nodeslist[i].longitude = cmin.longitude
     return nodeslist
 
 
 def graph(coor_points, altitude, nodeslist, bornes, velo, usager = 75, puissmax_usager = 250):
     sousgraphe = defaultdict(dict)
     liste = nodeslist+bornes
-    """liste = approx(nodeslist + bornes + [elp], coor_points)""" #bien une liste de points
+    liste = approx(nodeslist + bornes + [elp], coor_points) #bien une liste de points
     grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0] ; i= 0
     for p in liste:
         ener_p = djikstra(grosgraphe, p)
