@@ -125,8 +125,8 @@ class Tournee:
     
     def __add__(self,other):#Pas du tout commutatif
         tmp = Tournee(self.indices[0],self.elp,self.dist,self.clients)
-        ttourn1 = self.temps[-1]
         ot = other.temps.copy()
+        tcop = self.temps.copy()
         elp = self.elp
         i = self.indices[-1]
         ti = self.temps[-1]
@@ -134,8 +134,8 @@ class Tournee:
         clients = self.clients
         for k in range(len(ot)): #il faut changer le moment de passage de la deuxieme tournee
             ot[k] += self.dist(clients[i],clients[j]).duree + ti - self.dist(elp,clients[j]).duree
-            
-        tmp.temps = self.indices + ot
+        tmp.indices = self.indices + other.indices    
+        tmp.temps = tcop + ot
         tmp.poids = self.poids + other.poids - _tourns(self.clients,self.dist,self.indices[-1],other.indices[0],elp)
         tmp.masse = self.masse + other.masse
         return(tmp)
