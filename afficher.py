@@ -138,13 +138,14 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         ax.scatter(xy[0],xy[1],marker = 's')
 
     dico_points,altitude = dicos()
-    p_dist = graph(coor_point(dico_points),altitude,liste2,bornes,elp,Velo(400))
+    p_dist = graph(coor_point(dico_points),altitude,liste_clients,bornes,elp,Velo(400))
+    print(p_dist)
     dist = defaultdict(dict)
     for client in liste2:
         for client2 in liste2:
             pkey = Point(client.latitude,client.longitude)
             p2key = Point(client2.latitude,client2.longitude)
-            dist[client][client2] = p_dist[pkey,p2key]
+            dist[client][client2] = p_dist[pkey][p2key]
     
     """dist = defaultdict(dict)
     for elt in liste2:
