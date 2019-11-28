@@ -110,15 +110,15 @@ def djigstra(graphe,depart):
     return D
 
 
-def djikstra(graphe, p):
+def djikstra(graphe, t = None):
     G = nx.DiGraph()
     for p in graphe:
         G.add_node(p)
         G.add_weighted_edges_from([(p,q,graphe[p][q]) for q in graphe[p]])
-    return (nx.shortest_path_length(G, p), nx.shortest_path(G, p))
+    return (nx.shortest_path_length(G, t), nx.shortest_path(G, t))
     
 
-
+"""
 def path_clients(grosgraphe_0):#nodeslist et bornes sont des listes de point
     M = defaultdict(dict)
     for p in nodeslist+bornes+[elp]:
@@ -129,7 +129,7 @@ def path_clients(grosgraphe_0):#nodeslist et bornes sont des listes de point
     return M #ca renvoie un graphe de liste avec les listes de point liant les point du graphe
 
  
-
+"""
 
 
 
@@ -167,12 +167,13 @@ def approx(nodeslist, coor_points):
     return nodeslist
 
 
-def graph(coor_points, altitude, nodeslist, bornes, elp, velo, usager = 75, puissmax_usager = 250):
+def graph(coor_points, altitude, nodeslist, bornes, velo, usager = 75, puissmax_usager = 250):
     sousgraphe = defaultdict(dict)
-    liste = approx(nodeslist + bornes + [elp], coor_points) #bien une liste de points
+    liste = nodeslist+bornes
+    """liste = approx(nodeslist + bornes + [elp], coor_points)""" #bien une liste de points
     grosgraphe = grosgraph(coor_points, altitude, velo, usager, puissmax_usager)[0] ; i= 0
     for p in liste:
-        ener_p =  djikstra(grosgraphe, p)
+        ener_p = djikstra(grosgraphe, p)
         for q in liste:
             ener_pq = ener_p[0][q] 
             if (p != q and ener_pq != float("inf") and type(ener_pq) != float):
