@@ -1,0 +1,23 @@
+.présentation
+{
+	color: white;
+	font-size : 1.3em;
+	font-family = Comic Sans Ms;
+	text-align : center;
+}
+.nomdusite
+{
+	color:white;
+	font-size : 1.7em;
+	text-align : center;
+
+}
+body
+{
+	background-image : url("fondlesite.jpg");
+}
+.contact
+{
+	font-size: 0.7em;
+
+}
