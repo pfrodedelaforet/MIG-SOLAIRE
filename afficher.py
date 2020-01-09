@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from creer_liste_clients import creer_clients_csv
-from maptograph import graph,coor_point,trouvpoint,grosgraph,approx
+from newmaptograph import graph,coor_point,trouvpoint,grosgraph,approx
 from classes import *
 from pyproj import Transformer
 from optimisation_des_tournees import Clarke
@@ -68,7 +68,7 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
     longi = min_lon
     delta_lat = max_lat - min_lat
     delta_lon = max_lon - min_lon
-    zoom = 16
+    zoom = 10
 
     a = getImageCluster(lat,longi,delta_lat,delta_lon,zoom)
     fig, ax = plt.subplots()
@@ -89,10 +89,10 @@ def actualiser_carte(liste_tripo,echelles,trouver_point):
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
-        #if elt.liste_tournee != []:
-            #xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
-            #latlon = transfoinverse(xy_lamb[0],xy_lamb[1])
-            #xy = Triporteur.convert(latlon[0],latlon[1],echelles)
+        if elt.liste_tournee != []:
+            xy = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
+            latlon = [xy.latitude,xy.longitude]
+            xy = Triporteur.convert(latlon[0],latlon[1],echelles)
         elt.dot.set_offsets([xy[0],xy[1]])
 
 def dicos():
