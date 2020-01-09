@@ -114,15 +114,22 @@ def temps(djikdep, p, q, altitude, velo, coor_points, usager = 75, puissmax_usag
 
 
 
-def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points, 
+def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points,d,temps, 
                 usager = 75, puissmax_usager = 250):
     i = 0 ; dep = Point(depart.latitude, depart.longitude) 
     arr = Point(arrivee.latitude, arrivee.longitude)
-    L = djikstra(grosgraphe_0, dep)
-    while temps(L, dep, L[1][arr][i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
-        i+=1
-    return L[1][Point(arrivee.latitude, arrivee.longitude)][i] #c'est de la classe point
-
+    if not (dep in d):
+        L = djikstra(grosgraphe_0, dep)
+        d[dep] = L
+    L = d[dep]
+    #while temps(L, dep, L[1][arr][i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
+    #    i+=1
+    #return L[1][Point(arrivee.latitude, arrivee.longitude)][i] #c'est de la classe point
+    if not ((dep,arr) in temps):
+        temps[(dep,arr)] = temps(L, dep, L[1][arr][-1], altitude, velo, coor_points, usager, puissmax_usager)
+    tmax = temps[(dep,arr)]
+    prop = int((tdepuisdep/tmax)*len(L))
+    return L[1][arr][prop]
 def approx(nodeslist, coor_points):
     for i in range(len(nodeslist)) :
         distmin = float("inf") ; cmin = list(coor_points.keys())[0]

@@ -68,7 +68,7 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
     longi = min_lon
     delta_lat = max_lat - min_lat
     delta_lon = max_lon - min_lon
-    zoom = 10
+    zoom = 16
 
     a = getImageCluster(lat,longi,delta_lat,delta_lon,zoom)
     fig, ax = plt.subplots()
@@ -87,6 +87,7 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
 
 def actualiser_carte(liste_tripo,echelles,trouver_point): 
     """liste_tripo : liste d'objets de type triporteur"""
+    print("pierre est lent")
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
         if elt.liste_tournee != []:
@@ -94,6 +95,7 @@ def actualiser_carte(liste_tripo,echelles,trouver_point):
             latlon = [xy.latitude,xy.longitude]
             xy = Triporteur.convert(latlon[0],latlon[1],echelles)
         elt.dot.set_offsets([xy[0],xy[1]])
+    print("c bon")
 
 def dicos():
     list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
@@ -125,6 +127,8 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
        clients : liste d'objets de classe delivery_point
        dist : dist[i][j] renvoit la distance entre i et j"""
 
+    d = {}
+    temps = {}
     save = shelve.open('sauvegarde')
     #liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
     #save['liste_clients'] = liste_clients
@@ -186,7 +190,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 """
     def trouver_point(depart,arrivee,prop):
         temps = prop*dist[depart][arrivee].duree
-        return trouvpoint(grosgraph(coor_point(dico_points),altitude,Velo(400))[0],depart,arrivee,temps,altitude,Velo(400),coor_point(dico_points))
+        return trouvpoint(grosgraph(coor_point(dico_points),altitude,Velo(400))[0],depart,arrivee,temps,altitude,Velo(400),coor_point(dico_points),d,temps)
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     #liste_tripo[0].liste_tournee = liste_clients
     
