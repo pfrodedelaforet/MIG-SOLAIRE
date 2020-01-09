@@ -90,7 +90,7 @@ def actualiser_carte(liste_tripo,echelles,trouver_point):
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
         if elt.liste_tournee != []:
-            xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
+            xy_lamb = (trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete).x,trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete).y) 
             latlon = transfoinverse(xy_lamb[0],xy_lamb[1])
             xy = Triporteur.convert(latlon[0],latlon[1],echelles)
         elt.dot.set_offsets([xy[0],xy[1]])
