@@ -89,10 +89,10 @@ def actualiser_carte(liste_tripo,echelles,trouver_point):
     """liste_tripo : liste d'objets de type triporteur"""
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
-        if elt.liste_tournee != []:
-            xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
-            latlon = transfoinverse(xy_lamb[0],xy_lamb[1])
-            xy = Triporteur.convert(latlon[0],latlon[1],echelles)
+        #if elt.liste_tournee != []:
+            #xy_lamb = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
+            #latlon = transfoinverse(xy_lamb[0],xy_lamb[1])
+            #xy = Triporteur.convert(latlon[0],latlon[1],echelles)
         elt.dot.set_offsets([xy[0],xy[1]])
 
 def dicos():
@@ -199,5 +199,5 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
         plt.pause(t)
 nb_clients = 7
 elp = DeliveryPoint(43.701760, 7.269595)
-boucle(3,100,nb_clients,0.01,10,100,elp)
+boucle(3,10,nb_clients,0.01,10,100,elp)
 
