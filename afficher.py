@@ -186,7 +186,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 """
     def trouver_point(depart,arrivee,prop):
         temps = prop*dist[depart][arrivee].duree
-        return trouvpoint(grosgraph(coor_point(dico_points),altitude,Velo(400)),depart,arrivee,temps,altitude,Velo(400),coor_point(dico_points))
+        return trouvpoint(grosgraph(coor_point(dico_points),altitude,Velo(400))[0],depart,arrivee,temps,altitude,Velo(400),coor_point(dico_points))
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     #liste_tripo[0].liste_tournee = liste_clients
     

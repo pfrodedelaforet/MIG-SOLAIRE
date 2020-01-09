@@ -112,7 +112,7 @@ def djigstra(graphe,depart):
 
 def djikstra(graphe, t = None):
     G = nx.DiGraph()
-    for p in graphe:
+    for p in list(graphe.keys()):
         G.add_node(p)
         G.add_weighted_edges_from([(p,q,graphe[p][q]) for q in graphe[p]])
     return (nx.shortest_path_length(G, t), nx.shortest_path(G, t))
@@ -152,8 +152,8 @@ def temps(djikdep, p, q, altitude, velo, coor_points, usager = 75, puissmax_usag
 
 def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points, usager = 75, puissmax_usager = 250):
     i = 0
-    L = djikstra(grosgraphe_0, depart)
-    while temps(L, depart, L[1][arrivee][i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
+    L = djikstra(grosgraphe_0, Point(depart.latitude, depart.longitude))
+    while temps(L, Point(depart.latitude, depart.longitude), L[1][Point(arrivee.latitude, arrivee.longitude)][i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
         i+=1
     return L[i] #c'est de la classe point
 
