@@ -21,7 +21,7 @@ from PIL import Image
 
 
 
-def init_carte(min_lat,min_lon,max_lat,max_lon):
+def init_carte(min_lat,min_lon,max_lat,max_lon,save):
     """carte : image png du cadre de l'algorithme
        bords : [x1,y1,x2,y2] les bords du rectangle"""
     def deg2num(lat_deg, lon_deg, zoom):
@@ -70,7 +70,9 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
     delta_lon = max_lon - min_lon
     zoom = 16
 
-    a = getImageCluster(lat,longi,delta_lat,delta_lon,zoom)
+    #a = getImageCluster(lat,longi,delta_lat,delta_lon,zoom)
+    a = save['clus']
+    #save['clus'] = a
     fig, ax = plt.subplots()
     fig.patch.set_facecolor('white')
     tab = np.asarray(a[0])
@@ -87,15 +89,16 @@ def init_carte(min_lat,min_lon,max_lat,max_lon):
 
 def actualiser_carte(liste_tripo,echelles,trouver_point): 
     """liste_tripo : liste d'objets de type triporteur"""
-    print("pierre est lent")
     for elt in liste_tripo:
         xy = Triporteur.convert(elt.pos[0],elt.pos[1],echelles)
         if elt.liste_tournee != []:
+            print("pierre est lent, ",xy)
             xy = trouver_point(elt.last_dv_point,elt.liste_tournee[0],elt.prop_arrete) 
+            print("c bon ", xy)
             latlon = [xy.latitude,xy.longitude]
             xy = Triporteur.convert(latlon[0],latlon[1],echelles)
+        #print(elt," je vais en ",xy)
         elt.dot.set_offsets([xy[0],xy[1]])
-    print("c bon")
 
 def dicos():
     list_coor=np.genfromtxt('liste_coordonees.csv',delimiter=',')
@@ -128,7 +131,7 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
        dist : dist[i][j] renvoit la distance entre i et j"""
 
     d = {}
-    temps = {}
+    dict_temps = {}
     save = shelve.open('sauvegarde')
     #liste_clients = creer_clients_csv(nb_clients,csv = "shops.csv")
     #save['liste_clients'] = liste_clients
@@ -141,11 +144,13 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
     min_lon = np.min(liste_lon)
     max_lat = np.max(liste_lat)
     max_lon = np.max(liste_lon)
-    echelles,ax = init_carte(min_lat,min_lon,max_lat,max_lon)
+    echelles,ax = init_carte(min_lat,min_lon,max_lat,max_lon,save)
     bornes = []
     xy = Triporteur.convert(elp.latitude,elp.longitude,echelles)
 
     dico_points,altitude = dicos()
+    res_points = coor_point(dico_points)
+    grosave = grosgraph(res_points,altitude,Velo(400))
     """#on adaapte liste2 aux points proches
     pliste = [Point(elt.latitude,elt.longitude) for elt in liste2]
     pliste = approx(pliste,coor_point(dico_points))
@@ -190,16 +195,18 @@ def boucle(n,v,nb_clients,t,capacity,charge,elp):
 """
     def trouver_point(depart,arrivee,prop):
         temps = prop*dist[depart][arrivee].duree
-        return trouvpoint(grosgraph(coor_point(dico_points),altitude,Velo(400))[0],depart,arrivee,temps,altitude,Velo(400),coor_point(dico_points),d,temps)
+        print(temps)
+        return trouvpoint(grosave[0],depart,arrivee,temps,altitude,Velo(400),res_points,d,dict_temps)
     liste_tripo = [Triporteur(capacity, charge, elp,v,echelles) for i in range(n)]
     #liste_tripo[0].liste_tournee = liste_clients
     
     while 1:
         liste_client = Clarke(liste_tripo,dist,liste_client,elp)
+        i = 0
         for elt in liste_tripo:
             if elt.liste_tournee != []:
                 elt.avancer(dist,t)
-            actualiser_carte(liste_tripo,echelles,trouver_point)
+        actualiser_carte(liste_tripo,echelles,trouver_point)
         plt.pause(t)
 nb_clients = 7
 elp = DeliveryPoint(43.701760, 7.269595)

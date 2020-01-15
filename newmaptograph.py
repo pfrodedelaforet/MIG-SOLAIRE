@@ -107,28 +107,34 @@ def temps(djikdep, p, q, altitude, velo, coor_points, usager = 75, puissmax_usag
         if deltat == 'i':#trajet impossible
             t += float("inf")
         else:
-            print(deltat)
+            #print(deltat)
             t += float(deltat)
     return t 
 
 
 
 
-def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points,d,temps, 
+def trouvpoint(grosgraphe_0, depart, arrivee, tdepuisdep, altitude, velo, coor_points,d,dict_temps, 
                 usager = 75, puissmax_usager = 250):
     i = 0 ; dep = Point(depart.latitude, depart.longitude) 
     arr = Point(arrivee.latitude, arrivee.longitude)
     if not (dep in d):
+        #print("oui : ", len(d))
         L = djikstra(grosgraphe_0, dep)
+        #print("ok")
         d[dep] = L
     L = d[dep]
     #while temps(L, dep, L[1][arr][i], altitude, velo, coor_points, usager, puissmax_usager)< tdepuisdep : 
     #    i+=1
     #return L[1][Point(arrivee.latitude, arrivee.longitude)][i] #c'est de la classe point
-    if not ((dep,arr) in temps):
-        temps[(dep,arr)] = temps(L, dep, L[1][arr][-1], altitude, velo, coor_points, usager, puissmax_usager)
-    tmax = temps[(dep,arr)]
-    prop = int((tdepuisdep/tmax)*len(L))
+    if not ((dep,arr) in dict_temps):
+        print("oui2 : ", len(dict_temps))
+        dict_temps[(dep,arr)] = temps(L, dep, L[1][arr][-1], altitude, velo, coor_points, usager, puissmax_usager)
+        print("ok")
+    #tmax = dict_temps[(dep,arr)]
+    tmax = 35
+    prop = int(min([(tdepuisdep/tmax),1])*(len(L[1][arr])-1))
+    #print("prop : ",prop," temps : ",tdepuisdep,"   ",tmax," et : ",len(L[1][arr]))
     return L[1][arr][prop]
 def approx(nodeslist, coor_points):
     for i in range(len(nodeslist)) :

@@ -67,6 +67,7 @@ class Triporteur:
             self.taille_arrete = dist[self.last_dv_point][self.liste_tournee[0]].energie 
         #print("je vais vers : ",self.liste_tournee[0].latitude," , ",self.liste_tournee[0].longitude, "OR MORE LIKE ",self.liste_tournee[0].x," , ",self.liste_tournee[0].y)
         proptot = self.vitesse*t/self.taille_arrete + self.prop_arrete
+        print("jen suis a : ",self.prop_arrete)
         if proptot < 1 and self.taille_arrete not in (float("inf"),0) :
             self.prop_arrete = proptot
             self.pos = [self.last_dv_point.latitude + (self.liste_tournee[0].latitude-self.last_dv_point.latitude)*self.prop_arrete,self.last_dv_point.longitude + (self.liste_tournee[0].longitude-self.last_dv_point.longitude)*self.prop_arrete]
@@ -81,7 +82,7 @@ class Triporteur:
                 self.avancer(dist,reste) 
         
     def __repr__(self):
-        str(self.capacity,self.dispo,self.position, self.charge)
+        str(self.position)
 """class Bornes(Point):
     def __init__(self, lat, lon, priseslibres, charges):
         Point.__init__(self, lat, lon)
